@@ -5,7 +5,7 @@
     <title>Passage Viewer</title>
 </head>
 <body>
-    <h1>Passage of Play 4</h1>
+    <h1>Passage of Play 5 </h1>
     
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
@@ -16,9 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("https://script.google.com/macros/s/AKfycbzPVk2BjLF3jgDxwtJB_C1g7gqc7Jz0leou6Xpu2SfwLQbKDJbfqAY2bbA9FWSAd2NFuQ/exec")
         .then(response => response.json())
         .then(data => {
-            console.log("Fetched Data:", data); // ✅ Logs the full response
+            console.log("Fetched Data:", data); // ✅ Logs full JSON response
 
-            // Ensure passage data updates dynamically
+            // ✅ Ensure passage data updates dynamically
             document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner}`;
             document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
             document.getElementById("passage").innerText = `${data.passageOfPlay.text} - ${data.passageOfPlay.eventText}`;
