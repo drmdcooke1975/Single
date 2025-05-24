@@ -12,22 +12,22 @@
     <p id="matchScore">Loading score...</p>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("https://script.google.com/macros/s/AKfycbzHRQNZ926ch5g4BkpQhMFJ84GMR-wfO7RCnAZCUvTz12m1N5x7QwgdbCGR8xc7hwisWw/exec")
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched Data:", data); // ✅ Logs the data received
-                document.getElementById("matchResults").innerText = data.message || "No match results available.";
-                document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
-                document.getElementById("passage").innerText = data.passageOfPlay || "Passage data unavailable.";
-            })
-            .catch(error => {
-                console.error("API Fetch Error:", error);
-                document.getElementById("matchResults").innerText = "Error fetching match results.";
-                document.getElementById("matchScore").innerText = "Error fetching score.";
-                document.getElementById("passage").innerText = "Error fetching passage.";
-            });
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("YOUR_WEB_APP_URL")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched Data:", data); // ✅ Logs the full response
+
+            // Ensure passage data updates dynamically
+            document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner}`;
+            document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
+            document.getElementById("passage").innerText = `${data.passageOfPlay.text} - ${data.passageOfPlay.eventText}`;
+        })
+        .catch(error => console.error("API Error:", error));
+});
+
+
+        
     </script>
 
 </body>
