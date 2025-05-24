@@ -23,15 +23,15 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
     <script>
-        fetch('https://script.google.com/macros/s/AKfycbxHq6GJTQKacIuo_ZQHMGlm-krzvyNW1yrOB-BfhWoKC6hHFSvFfB_UNQ3iSQUWqb2PJg/exec')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('passage').innerText = data.passageOfPlay || "No passage data found.";
-            })
-            .catch(error => {
-                console.error("Fetch error:", error);
-                document.getElementById('passage').innerText = "Error loading passage.";
-            });
+
+fetch("https://script.google.com/macros/s/AKfycbxHq6GJTQKacIuo_ZQHMGlm-krzvyNW1yrOB-BfhWoKC6hHFSvFfB_UNQ3iSQUWqb2PJg/exec")
+.then(response => response.json())
+.then(data => {
+    document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
+    document.getElementById("passageDetails").innerText = data.passageOfPlay;
+})
+.catch(error => console.error("API Error:", error));
+
     </script>
 </body>
 </html>
