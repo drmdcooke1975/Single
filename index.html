@@ -5,7 +5,7 @@
     <title>Passage Viewer</title>
 </head>
 <body>
-    <h1>Passage of Play 1</h1>
+    <h1>Passage of Play 2</h1>
     
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
@@ -13,7 +13,7 @@
 
     <script>
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("YOUR_WEB_APP_URL")
+    fetch("https://script.google.com/macros/s/AKfycbzPVk2BjLF3jgDxwtJB_C1g7gqc7Jz0leou6Xpu2SfwLQbKDJbfqAY2bbA9FWSAd2NFuQ/exec")
         .then(response => response.json())
         .then(data => {
             console.log("Fetched Data:", data); // ✅ Logs the full response
@@ -23,11 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
             document.getElementById("passage").innerText = `${data.passageOfPlay.text} - ${data.passageOfPlay.eventText}`;
         })
-        .catch(error => console.error("API Error:", error));
+        .catch(error => {
+            console.error("API Error:", error);
+            document.getElementById("matchResults").innerText = "Error fetching match results.";
+            document.getElementById("matchScore").innerText = "Error fetching score.";
+            document.getElementById("passage").innerText = "Error fetching passage.";
+        });
 });
-
-
-        
     </script>
 
 </body>
