@@ -25,14 +25,17 @@ document.addEventListener("DOMContentLoaded", function () {
     <script>
 
 fetch("https://script.google.com/macros/s/AKfycbxHq6GJTQKacIuo_ZQHMGlm-krzvyNW1yrOB-BfhWoKC6hHFSvFfB_UNQ3iSQUWqb2PJg/exec")
+  
     .then(response => response.json())
     .then(data => {
-        console.log("API Response:", data); // **Logs the full response**
+        console.log("Fetched Data:", data); // ✅ Logs full API response
         document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
     })
-    .catch(error => console.error("API Fetch Error:", error)); // **Logs any errors**
+    .catch(error => {
+        console.error("API Fetch Error:", error); // ✅ Logs errors
+        document.getElementById("matchScore").innerText = "Error fetching data.";
+    });
 
-        
 
     </script>
 </body>
