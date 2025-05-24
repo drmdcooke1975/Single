@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passage Viewer</title>
+</head>
+<body>
+    <h1>Passage of Play</h1>
+    <p id="passage">Loading...</p>
+
+    <script>
+        fetch('https://script.google.com/macros/s/AKfycbxHq6GJTQKacIuo_ZQHMGlm-krzvyNW1yrOB-BfhWoKC6hHFSvFfB_UNQ3iSQUWqb2PJg/exec')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('passage').innerText = data.passageOfPlay || "No passage data found.";
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+                document.getElementById('passage').innerText = "Error loading passage.";
+            });
+    </script>
+</body>
+</html>
