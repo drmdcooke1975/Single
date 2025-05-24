@@ -7,6 +7,16 @@
 <body>
     <h1>Passage of Play</h1>
     <p id="passage">Loading...</p>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("https://script.google.com/macros/s/AKfycbzHRQNZ926ch5g4BkpQhMFJ84GMR-wfO7RCnAZCUvTz12m1N5x7QwgdbCGR8xc7hwisWw/exec")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("matchResults").innerText = data.message;
+        })
+        .catch(error => console.error("API Error:", error));
+});
+</script>
 
     <script>
         fetch('https://script.google.com/macros/s/AKfycbxHq6GJTQKacIuo_ZQHMGlm-krzvyNW1yrOB-BfhWoKC6hHFSvFfB_UNQ3iSQUWqb2PJg/exec')
