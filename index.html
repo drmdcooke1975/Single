@@ -15,33 +15,13 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec";
-
-        function updateZ2() {
-            fetch(scriptURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Z2 Update Response:", data);
-                document.getElementById("gameStatus").innerText = "Game Started! Z2 set to RUN.";
-
-                // ✅ Fetch match data after updating Z2
-                setTimeout(fetchMatchData, 1000);
-            })
-            .catch(error => {
-                console.error("Error updating Z2:", error);
-                document.getElementById("gameStatus").innerText = "Error updating game.";
-            });
-        }
-
         function fetchMatchData() {
-            fetch(scriptURL)
+            fetch("https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec")
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
 
+                // Ensure valid responses before updating UI
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
                     document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
                     document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
@@ -61,8 +41,11 @@
             });
         }
 
-        document.getElementById("startGameButton").addEventListener("click", updateZ2);
+        // Load match data on page load
+        document.addEventListener("DOMContentLoaded", fetchMatchData);
+
+        // Load match data when button is clicked
+        document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
     </script>
 </body>
 </html>
-
