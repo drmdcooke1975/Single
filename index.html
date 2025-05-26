@@ -15,13 +15,29 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
+        function updateZ2() {
+            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "startGame" }) // Sends a request to update Z2
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Z2 Update Response:", data);
+                document.getElementById("gameStatus").innerText = "Game Started! Z2 set to RUN.";
+
+                // ✅ After updating Z2, fetch match data
+                fetchMatchData();
+            })
+            .catch(error => console.error("Error updating Z2:", error));
+        }
+
         function fetchMatchData() {
-            fetch("https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec")
+            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec")
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
 
-                // Ensure valid responses before updating UI
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
                     document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
                     document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
@@ -41,11 +57,11 @@
             });
         }
 
-        // Load match data on page load
+        // ✅ Load match data on page load
         document.addEventListener("DOMContentLoaded", fetchMatchData);
 
-        // Load match data when button is clicked
-        document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
+        // ✅ Start Game Button: First update Z2, then fetch match data
+        document.getElementById("startGameButton").addEventListener("click", updateZ2);
     </script>
 </body>
 </html>
