@@ -11,6 +11,28 @@
     <p id="matchResults">Loading match results...</p>
     <p id="matchScore">Loading score...</p>
 
+
+
+   <button id="startGameButton">Start Game</button>
+    <p id="gameStatus"></p>
+
+    <script>
+        document.getElementById("startGameButton").addEventListener("click", function() {
+            fetch("https://script.google.com/macros/s/AKfycbwE6zIrGAaqZ7oQoGmb3V9oHjD7euK5XyOae33cg03KkD55kzaUwg4FSRv2PzAO4dFl/exec")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Game Started:", data);
+                document.getElementById("gameStatus").innerText = data.status;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+
+
+    
+
+
+    
     <script>
 document.addEventListener("DOMContentLoaded", function () {
     fetch("https://script.google.com/macros/s/AKfycbwE6zIrGAaqZ7oQoGmb3V9oHjD7euK5XyOae33cg03KkD55kzaUwg4FSRv2PzAO4dFl/exec") // ✅ Updated to correct Web App URL
