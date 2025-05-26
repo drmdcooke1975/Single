@@ -15,36 +15,13 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzfsqkJhrwPv9J9DeJa5nlxtCGXOPOnAJ0gb4x9esmoVM-nUsLvAx4YzLY8T1Ypou3woA/exec";
-
-        async function updateZ2() {
-            try {
-                const response = await fetch(scriptURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify({ action: "startGame" })
-                });
-
-                const data = await response.json();
-                console.log("Z2 Update Response:", data);
-                document.getElementById("gameStatus").innerText = "Game Started! Z2 set to RUN.";
-
-                // ✅ After updating Z2, fetch match data
-                setTimeout(fetchMatchData, 1000);
-            } catch (error) {
-                console.error("Error updating Z2:", error);
-                document.getElementById("gameStatus").innerText = "Error updating Z2!";
-            }
-        }
-
-        async function fetchMatchData() {
-            try {
-                const response = await fetch(scriptURL, { method: "GET", mode: "cors" });
-                const data = await response.json();
-                
+        function fetchMatchData() {
+            fetch("https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec")
+            .then(response => response.json())
+            .then(data => {
                 console.log("Fetched Data:", data);
 
+                // Ensure valid responses before updating UI
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
                     document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
                     document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
@@ -54,16 +31,21 @@
 
                 document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Data not available"}`;
                 document.getElementById("passage").innerText = `${data.passageOfPlay.text || "Awaiting passage update..."} - ${data.passageOfPlay.eventText || "No event recorded"}`;
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error("API Error:", error);
                 document.getElementById("matchResults").innerText = "Error fetching match results.";
                 document.getElementById("matchScore").innerText = "Error fetching score.";
                 document.getElementById("passage").innerText = "Error fetching passage.";
                 document.getElementById("gameStatus").innerText = "Error loading game data.";
-            }
+            });
         }
 
-        document.getElementById("startGameButton").addEventListener("click", updateZ2);
+        // Load match data on page load
+        document.addEventListener("DOMContentLoaded", fetchMatchData);
+
+        // Load match data when button is clicked
+        document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
     </script>
 </body>
 </html>
