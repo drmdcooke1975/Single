@@ -10,6 +10,7 @@
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
     <p id="matchScore">Loading score...</p>
+    <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
     <!-- ✅ Button to ONLY set Z2 to "RUN" -->
     <button id="setZ2Button">Set Z2 to RUN</button>
@@ -24,6 +25,9 @@
 
         // ✅ Function to ONLY update Z2
         function setZ2ToRun() {
+            console.log("[DEBUG] Button 'Set Z2 to RUN' clicked!");
+            document.getElementById("debugLogs").innerText = "[DEBUG] Sending POST request to update Z2...";
+            
             fetch(scriptURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" }
@@ -32,19 +36,25 @@
             .then(data => {
                 console.log("Z2 Update Response:", data);
                 document.getElementById("gameStatus").innerText = "Z2 updated to RUN!";
+                document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
             })
             .catch(error => {
                 console.error("Error updating Z2:", error);
                 document.getElementById("gameStatus").innerText = "Error updating Z2.";
+                document.getElementById("debugLogs").innerText = `[ERROR] Failed to update Z2:\n${error}`;
             });
         }
 
         // ✅ Function to fetch match data
         function fetchMatchData() {
+            console.log("[DEBUG] Button 'Start Game' clicked!");
+            document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to fetch match data...";
+            
             fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
+                document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
 
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
                     document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
@@ -58,6 +68,7 @@
             })
             .catch(error => {
                 console.error("API Error:", error);
+                document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
                 document.getElementById("matchResults").innerText = "Error fetching match results.";
                 document.getElementById("matchScore").innerText = "Error fetching score.";
                 document.getElementById("passage").innerText = "Error fetching passage.";
