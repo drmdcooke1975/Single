@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Passage Viewer</title>
+    <title>Passage Viewer  2  </title>
 </head>
 <body>
-    <h1>Passage of Play</h1>
+    <h1>Passage of Play 1</h1>
     
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
@@ -16,7 +16,7 @@
 
     <script>
         function updateZ2() {
-            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+            fetch("https://script.google.com/macros/s/AKfycbzfsqkJhrwPv9J9DeJa5nlxtCGXOPOnAJ0gb4x9esmoVM-nUsLvAx4YzLY8T1Ypou3woA/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "startGame" }) // Sends a request to update Z2
@@ -33,7 +33,7 @@
         }
 
         function fetchMatchData() {
-            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec")
+            fetch("https://script.google.com/macros/s/AKfycbzfsqkJhrwPv9J9DeJa5nlxtCGXOPOnAJ0gb4x9esmoVM-nUsLvAx4YzLY8T1Ypou3woA/exec")
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
