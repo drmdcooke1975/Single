@@ -11,17 +11,41 @@
     <p id="matchResults">Loading match results...</p>
     <p id="matchScore">Loading score...</p>
 
+    <!-- ✅ Button to ONLY set Z2 to "RUN" -->
+    <button id="setZ2Button">Set Z2 to RUN</button>
+
+    <!-- ✅ Original button for fetching match data -->
     <button id="startGameButton">Start Game</button>
+
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec";
+
+        // ✅ Function to ONLY update Z2
+        function setZ2ToRun() {
+            fetch(scriptURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Z2 Update Response:", data);
+                document.getElementById("gameStatus").innerText = "Z2 updated to RUN!";
+            })
+            .catch(error => {
+                console.error("Error updating Z2:", error);
+                document.getElementById("gameStatus").innerText = "Error updating Z2.";
+            });
+        }
+
+        // ✅ Function to fetch match data
         function fetchMatchData() {
-            fetch("https://script.google.com/macros/s/AKfycbwtkhQ1xc9KtNePfpPSa-suwjPPqFJUbbNkPBhjda57IC5-x37OCqjbkV3m8mNAjz7yUw/exec")
+            fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
 
-                // Ensure valid responses before updating UI
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
                     document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
                     document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
@@ -41,10 +65,10 @@
             });
         }
 
-        // Load match data on page load
-        document.addEventListener("DOMContentLoaded", fetchMatchData);
+        // ✅ Button to ONLY update Z2
+        document.getElementById("setZ2Button").addEventListener("click", setZ2ToRun);
 
-        // Load match data when button is clicked
+        // ✅ Button to fetch match data
         document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
     </script>
 </body>
