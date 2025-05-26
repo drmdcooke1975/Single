@@ -27,23 +27,33 @@
         function setZ2ToRun() {
             console.log("[DEBUG] Button 'Set Z2 to RUN' clicked!");
             document.getElementById("debugLogs").innerText = "[DEBUG] Sending POST request to update Z2...";
+
+fetch("https://script.google.com/macros/s/AKfycbzApKCgb-qxLudR9bAIkR9PJoo27IExJyzEk3kyYvP6YKmKe_5z4O8X7MkWqxjPbF-QPA/exec", { 
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    mode: "cors" // ✅ Enables CORS compatibility
+})
+.then(response => response.json())
+.then(data => console.log("Response from doPost():", data))
+.catch(error => console.error("Error:", error));
+
             
-            fetch(scriptURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Z2 Update Response:", data);
-                document.getElementById("gameStatus").innerText = "Z2 updated to RUN!";
-                document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
-            })
-            .catch(error => {
-                console.error("Error updating Z2:", error);
-                document.getElementById("gameStatus").innerText = "Error updating Z2.";
-                document.getElementById("debugLogs").innerText = `[ERROR] Failed to update Z2:\n${error}`;
-            });
-        }
+   //         fetch(scriptURL, {
+   //             method: "POST",
+   //             headers: { "Content-Type": "application/json" }
+   //         })
+   //         .then(response => response.json())
+   //         .then(data => {
+   //             console.log("Z2 Update Response:", data);
+   //             document.getElementById("gameStatus").innerText = "Z2 updated to RUN!";
+//           document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
+  //          })
+    //        .catch(error => {
+              //  console.error("Error updating Z2:", error);
+            //    document.getElementById("gameStatus").innerText = "Error updating Z2.";
+          //      document.getElementById("debugLogs").innerText = `[ERROR] Failed to update Z2:\n${error}`;
+        //    });
+      //  }
 
         // ✅ Function to fetch match data
         function fetchMatchData() {
