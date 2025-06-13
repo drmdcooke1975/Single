@@ -35,4 +35,4 @@
                 document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
 
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
-                    document.getElementById("matchScore
+                    document.getElementById("matchScore").innerText = `Score: ${data.team
