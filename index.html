@@ -54,6 +54,31 @@
             });
         }
 
+document.getElementById("resetGameButton").addEventListener("click", function() {
+    console.log("[DEBUG] Reset button clicked!");
+    let resetURL = scriptURL + "?action=reset";
+    console.log(`[DEBUG] Sending request to: ${resetURL}`);
+
+    fetch(resetURL)
+    .then(response => response.json())
+    .then(data => {
+        console.log("Reset Response:", data);
+        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
+        document.getElementById("gameStatus").innerText = data.status;
+
+        // ✅ Clear displayed game data
+        document.getElementById("passage").innerText = "Awaiting passage update...";
+        document.getElementById("matchResults").innerText = "Awaiting match results...";
+        document.getElementById("matchScore").innerText = "Score: 0 - 0";
+    })
+    .catch(error => {
+        console.error("[ERROR] Reset failed:", error);
+        document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
+    });
+});
+
+
+        
         // ✅ Function to reset the game (Increment Match ID & Reset Scores)
         function resetGame() {
             console.log("[DEBUG] Reset button clicked!");
