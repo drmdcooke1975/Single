@@ -55,26 +55,25 @@
                 });
             }
 
-            // ✅ Reset Game Function
+            // ✅ Reset Game Function (Uses Fetch API)
             function resetGame() {
                 console.log("[DEBUG] Reset button clicked!");
 
-                google.script.run
-                    .withSuccessHandler(function(response) {
-                        console.log("[DEBUG] Reset Response:", response);
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(response, null, 2)}`;
-                        document.getElementById("gameStatus").innerText = response.status;
+                fetch(scriptURL + "?action=reset")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("[DEBUG] Reset Response:", data);
+                    document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
+                    document.getElementById("gameStatus").innerText = data.status;
 
-                        // ✅ Clear displayed game data
-                        document.getElementById("passage").innerText = "Awaiting passage update...";
-                        document.getElementById("matchResults").innerText = "Awaiting match results...";
-                        document.getElementById("matchScore").innerText = "Score: 0 - 0";
-                    })
-                    .withFailureHandler(function(error) {
-                        console.error("[ERROR] Reset failed:", error.message);
-                        document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error.message}`;
-                    })
-                    .resetGameData(); // ✅ Calls resetGameData() in Apps Script
+                    document.getElementById("passage").innerText = "Awaiting passage update...";
+                    document.getElementById("matchResults").innerText = "Awaiting match results...";
+                    document.getElementById("matchScore").innerText = "Score: 0 - 0";
+                })
+                .catch(error => {
+                    console.error("[ERROR] Reset failed:", error);
+                    document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
+                });
             }
 
             // ✅ Attach event listeners after page loads
