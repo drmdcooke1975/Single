@@ -47,40 +47,4 @@
                 })
                 .catch(error => {
                     console.error("API Error:", error);
-                    document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
-                    document.getElementById("matchResults").innerText = "Error fetching match results.";
-                    document.getElementById("matchScore").innerText = "Error fetching score.";
-                    document.getElementById("passage").innerText = "Error fetching passage.";
-                    document.getElementById("gameStatus").innerText = "Error loading game data.";
-                });
-            }
-
-            // ✅ Reset Game Function (Directly Calling `resetGameData()`)
-            function resetGame() {
-                console.log("[DEBUG] Reset button clicked!");
-
-                fetch(scriptURL + "?action=resetGameData")
-                .then(response => response.json())
-                .then(data => {
-                    console.log("[DEBUG] Reset Response:", data);
-                    document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
-                    document.getElementById("gameStatus").innerText = data.status;
-
-                    // ✅ Ensure match data is reset in UI
-                    document.getElementById("passage").innerText = "Awaiting passage update...";
-                    document.getElementById("matchResults").innerText = "Awaiting match results...";
-                    document.getElementById("matchScore").innerText = "Score: 0 - 0";
-                })
-                .catch(error => {
-                    console.error("[ERROR] Reset failed:", error);
-                    document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
-                });
-            }
-
-            // ✅ Attach event listeners after page loads
-            document.getElementById("startGameButton").addEventListener("click", startGame);
-            document.getElementById("resetGameButton").addEventListener("click", resetGame);
-        });
-    </script>
-</body>
-</html>
+                    document.getElementById("debugLogs").innerText = `[ERROR] Failed
