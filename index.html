@@ -6,13 +6,13 @@
 </head>
 <body>
     <h1>Passage of Play</h1>
-    
+
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
     <p id="matchScore">Loading score...</p>
     <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <!-- ✅ Button to start the game (Sets Z2 to RUN automatically) -->
+    <!-- ✅ Button to start the game -->
     <button id="startGameButton">Start Game</button>
 
     <!-- ✅ Reset Game Button -->
@@ -23,89 +23,16 @@
     <script>
         const scriptURL = "https://script.google.com/macros/s/AKfycbxv418dJQoTHh5Dm5Y11pLQZ9dssiPzdT8Q3cXYO8qa9LnrKCuBiRfLMY-UwykdnTnxgQ/exec";
 
-        // ✅ Function to start the game (Sets Z2 to "RUN")
+        // ✅ Start Game Function
         function startGame() {
             console.log("[DEBUG] Button 'Start Game' clicked!");
             document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger simulation...";
             
-            fetch(scriptURL) // ✅ Calling `doGet()`, which sets Z2 to "RUN"
+            fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
                 document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
 
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
-                    document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
-                    document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
-                } else {
-                    document.getElementById("gameStatus").innerText = "Error: Invalid match data";
-                }
-
-                document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Data not available"}`;
-                document.getElementById("passage").innerText = `${data.passageOfPlay.text || "Awaiting passage update..."} - ${data.passageOfPlay.eventText || "No event recorded"}`;
-            })
-            .catch(error => {
-                console.error("API Error:", error);
-                document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
-                document.getElementById("matchResults").innerText = "Error fetching match results.";
-                document.getElementById("matchScore").innerText = "Error fetching score.";
-                document.getElementById("passage").innerText = "Error fetching passage.";
-                document.getElementById("gameStatus").innerText = "Error loading game data.";
-            });
-        }
-
-document.getElementById("resetGameButton").addEventListener("click", function() {
-    console.log("[DEBUG] Reset button clicked!");
-    let resetURL = scriptURL + "?action=reset";
-    console.log(`[DEBUG] Sending request to: ${resetURL}`);
-
-    fetch(resetURL)
-    .then(response => response.json())
-    .then(data => {
-        console.log("Reset Response:", data);
-        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
-        document.getElementById("gameStatus").innerText = data.status;
-
-        // ✅ Clear displayed game data
-        document.getElementById("passage").innerText = "Awaiting passage update...";
-        document.getElementById("matchResults").innerText = "Awaiting match results...";
-        document.getElementById("matchScore").innerText = "Score: 0 - 0";
-    })
-    .catch(error => {
-        console.error("[ERROR] Reset failed:", error);
-        document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
-    });
-});
-
-
-        
-        // ✅ Function to reset the game (Increment Match ID & Reset Scores)
-        function resetGame() {
-            console.log("[DEBUG] Reset button clicked!");
-            document.getElementById("debugLogs").innerText = "[DEBUG] Sending reset request...";
-
-            fetch(scriptURL + "?action=reset") // ✅ Calls the reset function via Google Apps Script
-            .then(response => response.json())
-            .then(data => {
-                console.log("Reset Response:", data);
-                document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
-                document.getElementById("gameStatus").innerText = data.status;
-
-                // ✅ Clear displayed game data
-                document.getElementById("passage").innerText = "Awaiting passage update...";
-                document.getElementById("matchResults").innerText = "Awaiting match results...";
-                document.getElementById("matchScore").innerText = "Score: 0 - 0";
-            })
-            .catch(error => {
-                console.error("[ERROR] Reset failed:", error);
-                document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
-            });
-        }
-
-        // ✅ Button Event Listeners
-        document.getElementById("startGameButton").addEventListener("click", startGame);
-        document.getElementById("resetGameButton").addEventListener("click", resetGame);
-
-    </script>
-</body>
-</html>
+                    document.getElementById("matchScore
