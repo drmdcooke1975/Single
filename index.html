@@ -5,29 +5,30 @@
     <title>Passage Viewer</title>
 </head>
 <body>
-    <h1>Passage of Play 1 </h1>
+    <h1>Passage of Play</h1>
     
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
     <p id="matchScore">Loading score...</p>
     <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <!-- ✅ Single button to start the game (Now handles setting Z2 to RUN automatically) -->
+    <!-- ✅ Button to start the game (Sets Z2 to RUN automatically) -->
     <button id="startGameButton">Start Game</button>
+
+    <!-- ✅ Reset Game Button -->
+    <button id="resetGameButton">Reset Game</button>
 
     <p id="gameStatus">Awaiting game start...</p>
 
-<button id="resetGameButton">Reset Game</button>
-    
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzApKCgb-qxLudR9bAIkR9PJoo27IExJyzEk3kyYvP6YKmKe_5z4O8X7MkWqxjPbF-QPA/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxv418dJQoTHh5Dm5Y11pLQZ9dssiPzdT8Q3cXYO8qa9LnrKCuBiRfLMY-UwykdnTnxgQ/exec";
 
-        // ✅ Function to start the game (automatically sets Z2 to "RUN" via doGet)
+        // ✅ Function to start the game (Sets Z2 to "RUN")
         function startGame() {
             console.log("[DEBUG] Button 'Start Game' clicked!");
             document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger simulation...";
             
-            fetch(scriptURL) // ✅ Calling `doGet()`, which sets Z2 to "RUN" and executes the match simulation
+            fetch(scriptURL) // ✅ Calling `doGet()`, which sets Z2 to "RUN"
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched Data:", data);
@@ -53,31 +54,32 @@
             });
         }
 
-        // ✅ Button to start the game (handles everything)
+        // ✅ Function to reset the game (Increment Match ID & Reset Scores)
+        function resetGame() {
+            console.log("[DEBUG] Reset button clicked!");
+            document.getElementById("debugLogs").innerText = "[DEBUG] Sending reset request...";
+
+            fetch(scriptURL + "?action=reset") // ✅ Calls the reset function via Google Apps Script
+            .then(response => response.json())
+            .then(data => {
+                console.log("Reset Response:", data);
+                document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
+                document.getElementById("gameStatus").innerText = data.status;
+
+                // ✅ Clear displayed game data
+                document.getElementById("passage").innerText = "Awaiting passage update...";
+                document.getElementById("matchResults").innerText = "Awaiting match results...";
+                document.getElementById("matchScore").innerText = "Score: 0 - 0";
+            })
+            .catch(error => {
+                console.error("[ERROR] Reset failed:", error);
+                document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
+            });
+        }
+
+        // ✅ Button Event Listeners
         document.getElementById("startGameButton").addEventListener("click", startGame);
-
-
-        document.getElementById("resetGameButton").addEventListener("click", function() {
-    console.log("[DEBUG] Reset button clicked!");
-    document.getElementById("debugLogs").innerText = "[DEBUG] Sending reset request...";
-
-    fetch(scriptURL + "?action=reset") // ✅ Calls the reset function via Google Apps Script
-    .then(response => response.json())
-    .then(data => {
-        console.log("Reset Response:", data);
-        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
-        document.getElementById("gameStatus").innerText = data.status;
-
-        // ✅ Optionally clear displayed game data
-        document.getElementById("passage").innerText = "Awaiting passage update...";
-        document.getElementById("matchResults").innerText = "Awaiting match results...";
-        document.getElementById("matchScore").innerText = "Score: 0 - 0";
-    })
-    .catch(error => {
-        console.error("[ERROR] Reset failed:", error);
-        document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
-    });
-});
+        document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
     </script>
 </body>
