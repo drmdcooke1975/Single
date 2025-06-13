@@ -12,7 +12,7 @@
     <p id="matchScore">Loading score...</p>
     <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <!-- ✅ Button to start the game -->
+    <!-- ✅ Button to start the game (triggers `doGet(e)`) -->
     <button id="startGameButton">Start Game</button>
 
     <!-- ✅ Reset Game Button -->
@@ -24,15 +24,19 @@
         const scriptURL = "https://script.google.com/macros/s/AKfycbyvois44eyxSlQ5mhbGNWsEGjHcw6HaQZKzx5S5YJGn1UV-MiBFiyTFs-H-vFG3yIZohA/exec";
 
         document.addEventListener("DOMContentLoaded", function() {
-            // ✅ Start Game Function
-            function startGame() {
-                console.log("[DEBUG] Button 'Start Game' clicked!");
-                document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger simulation...";
-                
-                fetch(scriptURL)
+            // ✅ Function to trigger `doGet(e)`
+            function fetchMatchData() {
+                console.log("[DEBUG] Start Game button clicked!");
+                document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger passage of play...";
+
+                // ✅ Call `doGet(e)` directly—no `action=startGame`
+                const url = `${scriptURL}?t=${new Date().getTime()}`;
+                console.log("[DEBUG] Fetching:", url);
+
+                fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Fetched Data:", data);
+                    console.log("[DEBUG] Response:", data);
                     document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
 
                     if (data.team1Score !== undefined && data.team2Score !== undefined) {
@@ -46,40 +50,38 @@
                     document.getElementById("passage").innerText = `${data.passageOfPlay.text || "Awaiting passage update..."} - ${data.passageOfPlay.eventText || "No event recorded"}`;
                 })
                 .catch(error => {
-                    console.error("API Error:", error);
+                    console.error("[ERROR] API Request Failed:", error);
                     document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
-                    document.getElementById("matchResults").innerText = "Error fetching match results.";
-                    document.getElementById("matchScore").innerText = "Error fetching score.";
-                    document.getElementById("passage").innerText = "Error fetching passage.";
-                    document.getElementById("gameStatus").innerText = "Error loading game data.";
                 });
             }
 
-            // ✅ Reset Game Function (Directly Calling `resetGameData()`)
+            // ✅ Reset Game Function (if needed)
             function resetGame() {
                 console.log("[DEBUG] Reset button clicked!");
 
-                const timestamp = new Date().getTime(); // Prevent caching issues
-                fetch(scriptURL + "?action=resetGameData&t=" + timestamp) // Calls resetGameData from Apps Script
+                const timestamp = new Date().getTime(); 
+                const resetURL = `${scriptURL}?action=resetGameData&t=${timestamp}`;
+                console.log("[DEBUG] Fetching:", resetURL);
+
+                fetch(resetURL)
                 .then(response => response.json())
                 .then(data => {
                     console.log("[DEBUG] Reset Response:", data);
                     document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
                     document.getElementById("gameStatus").innerText = data.status;
 
-                    // ✅ Reset the displayed UI
                     document.getElementById("passage").innerText = "Awaiting passage update...";
                     document.getElementById("matchResults").innerText = "Awaiting match results...";
                     document.getElementById("matchScore").innerText = "Score: 0 - 0";
                 })
                 .catch(error => {
-                    console.error("[ERROR] Reset failed:", error);
+                    console.error("[ERROR] Reset Request Failed:", error);
                     document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
                 });
             }
 
-            // ✅ Attach event listeners after page loads
-            document.getElementById("startGameButton").addEventListener("click", startGame);
+            // ✅ Attach event listeners
+            document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
             document.getElementById("resetGameButton").addEventListener("click", resetGame);
         });
     </script>
