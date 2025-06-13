@@ -21,7 +21,7 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbxv418dJQoTHh5Dm5Y11pLQZ9dssiPzdT8Q3cXYO8qa9LnrKCuBiRfLMY-UwykdnTnxgQ/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyxNjqR64ew7dWNI9fLJ_loTpEmGXNsdBeoLTo3BltKQdsrbID5tLw9OgewfDsWk9XSRw/exec";
 
         // ✅ Start Game Function
         function startGame() {
@@ -35,4 +35,39 @@
                 document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
 
                 if (data.team1Score !== undefined && data.team2Score !== undefined) {
-                    document.getElementById("matchScore").innerText = `Score: ${data.team
+                    document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
+                    document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
+                } else {
+                    document.getElementById("gameStatus").innerText = "Error: Invalid match data";
+                }
+
+                document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Data not available"}`;
+                document.getElementById("passage").innerText = `${data.passageOfPlay.text || "Awaiting passage update..."} - ${data.passageOfPlay.eventText || "No event recorded"}`;
+            })
+            .catch(error => {
+                console.error("API Error:", error);
+                document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
+                document.getElementById("matchResults").innerText = "Error fetching match results.";
+                document.getElementById("matchScore").innerText = "Error fetching score.";
+                document.getElementById("passage").innerText = "Error fetching passage.";
+                document.getElementById("gameStatus").innerText = "Error loading game data.";
+            });
+        }
+
+        // ✅ Reset Game Function
+        document.getElementById("resetGameButton").addEventListener("click", function() {
+            console.log("[DEBUG] Reset button clicked!");
+
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    console.log("[DEBUG] Reset Response:", response);
+                    document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(response, null, 2)}`;
+                    document.getElementById("gameStatus").innerText = response.status;
+
+                    // ✅ Clear displayed game data
+                    document.getElementById("passage").innerText = "Awaiting passage update...";
+                    document.getElementById("matchResults").innerText = "Awaiting match results...";
+                    document.getElementById("matchScore").innerText = "Score: 0 - 0";
+                })
+                .withFailureHandler(function(error) {
+                    console.error("
