@@ -55,11 +55,11 @@
                 });
             }
 
-            // ✅ Reset Game Function (Uses Fetch API)
+            // ✅ Reset Game Function (Calling `resetGameData()` Instead)
             function resetGame() {
                 console.log("[DEBUG] Reset button clicked!");
 
-                fetch(scriptURL + "?action=reset")
+                fetch(scriptURL + "?action=resetGameData")
                 .then(response => response.json())
                 .then(data => {
                     console.log("[DEBUG] Reset Response:", data);
