@@ -24,13 +24,12 @@
         const scriptURL = "https://script.google.com/macros/s/AKfycbyvois44eyxSlQ5mhbGNWsEGjHcw6HaQZKzx5S5YJGn1UV-MiBFiyTFs-H-vFG3yIZohA/exec";
 
         document.addEventListener("DOMContentLoaded", function() {
-            // ✅ Function to trigger `doGet(e)`
+            // ✅ Function to trigger `doGet(e)` for passage simulation
             function fetchMatchData() {
                 console.log("[DEBUG] Start Game button clicked!");
                 document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger passage of play...";
 
-                // ✅ Call `doGet(e)` directly—no `action=startGame`
-                const url = `${scriptURL}?t=${new Date().getTime()}`;
+                const url = `${scriptURL}?t=${new Date().getTime()}`; // ✅ No `action=startGame`
                 console.log("[DEBUG] Fetching:", url);
 
                 fetch(url)
@@ -55,7 +54,7 @@
                 });
             }
 
-            // ✅ Reset Game Function (if needed)
+            // ✅ Reset Game Function
             function resetGame() {
                 console.log("[DEBUG] Reset button clicked!");
 
