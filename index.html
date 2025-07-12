@@ -1,97 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Passage Viewer1</title>
+  <meta charset="UTF-8" />
+  <title>Match Sim</title>
 </head>
 <body>
-    <h1>Passage of Play</h1>
+  <h1>Passage of Play</h1>
 
-    <div id="scoreboard" style="display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 20px;">
-  <span id="team1Name" style="margin-right: 15px;">Team 1</span>
-  <strong id="team1Score">0</strong>
-  <span style="margin: 0 10px;">⚔️</span>
-  <strong id="team2Score">0</strong>
-  <span id="team2Name" style="margin-left: 15px;">Team 2</span>
-</div>
+  <!-- Scoreboard -->
+  <div id="scoreboard" style="display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 20px;">
+    <span id="team1Name" style="margin-right: 15px;">Team 1</span>
+    <strong id="team1Score">0</strong>
+    <span style="margin: 0 10px;">⚔️</span>
+    <strong id="team2Score">0</strong>
+    <span id="team2Name" style="margin-left: 15px;">Team 2</span>
+  </div>
 
+  <!-- Tactical Selector -->
+  <label for="team1Tactic">Team 1 Tactical Choice:</label>
+  <select id="team1Tactic">
+    <option value="Attack">Attack</option>
+    <option value="Hold" selected>Hold</option>
+    <option value="Defend">Defend</option>
+  </select>
 
-    <!-- Team 1 Tactical Choice Dropdown -->
-    <label for="team1Tactic">Team 1 Tactical Choice:</label>
-    <select id="team1Tactic">
-        <option value="Attack">Attack</option>
-        <option value="Hold" selected>Hold</option>
-        <option value="Defend">Defend</option>
-    </select>
+  <!-- Game Info -->
+  <p id="passage">Loading passage...</p>
+  <p id="matchResults">Loading match results...</p>
+  <p id="matchScore">Loading score...</p>
+  <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <p id="passage">Loading passage...</p>
-    <p id="matchResults">Loading match results...</p>
-    <p id="matchScore">Loading score...</p>
-    <p id="debugLogs">Debug Logs: Awaiting response...</p>
+  <!-- Game Buttons -->
+  <button id="startGameButton">Start Game</button>
+  <button id="resetGameButton">Reset Game</button>
 
-    <button id="startGameButton">Start Game Passage</button>
-    <button id="resetGameButton">Reset Game</button>
+  <p id="gameStatus">Awaiting game start...</p>
 
-    <p id="gameStatus">Awaiting game start...</p>
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
 
-    <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbxrDtB6WofKklJSZ_RrwDelPhWYFEUO3cS8MwLIYU0NfzL7vh0OEpW5mqDb7wzWC3l2Dg/exec";
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("startGameButton").addEventListener("click", playPassage);
+      document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("startGameButton").addEventListener("click", playPassage);
-            document.getElementById("resetGameButton").addEventListener("click", resetGame);
+      function playPassage() {
+        const tactic = document.getElementById("team1Tactic").value;
+        const url = `${scriptURL}?action=passage&tactic=${tactic}&t=${new Date().getTime()}`;
+        document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
-            function playPassage() {
-                const tactic = document.getElementById("team1Tactic").value;
-                const url = `${scriptURL}?action=passage&tactic=${tactic}&t=${new Date().getTime()}`;
-                document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            const passageData = data.passageData || {};
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const passageData = data.passageData || {};
-                        let logOutput = "[LOGS]\n";
-                        logOutput += `Initial Passage Count: ${passageData.passagesPlayed - 1}\n`;
-                        logOutput += `Updated Passage Count: ${passageData.passagesPlayed}\n`;
-                        logOutput += `Status: ${passageData.status}\n`;
-                        logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
-                        logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
-                        logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
-                        logOutput += `Team 1 Score: ${passageData.team1Score}\n`;
-                        logOutput += `Team 2 Score: ${passageData.team2Score}\n\n`;
-                        if (Array.isArray(passageData.debugLogs)) {
-                            logOutput += passageData.debugLogs.join("\n");
-                        }
+            // Update scoreboard
+            document.getElementById("team1Score").innerText = passageData.team1Score;
+            document.getElementById("team2Score").innerText = passageData.team2Score;
 
-                        document.getElementById("gameStatus").innerText = "Game Started!";
-                        document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
-                        document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
-                        document.getElementById("debugLogs").innerText = logOutput;
-                    })
-                    .catch(error => {
-                        document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-                    });
+            // Update UI fields
+            document.getElementById("gameStatus").innerText = "Game Started!";
+            document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
+            document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
+
+            let logOutput = "[LOGS]\n";
+            logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
+            logOutput += `Status: ${passageData.status}\n`;
+            logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
+            logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
+            logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
+            logOutput += `Score: ${passageData.team1Score} - ${passageData.team2Score}\n\n`;
+            if (Array.isArray(passageData.debugLogs)) {
+              logOutput += passageData.debugLogs.join("\n");
             }
+            document.getElementById("debugLogs").innerText = logOutput;
+          })
+          .catch(error => {
+            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+          });
+      }
 
-            function resetGame() {
-                const url = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
-                document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
+      function resetGame() {
+        const url = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
+        document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById("gameStatus").innerText = "Game Reset.";
-                        document.getElementById("passage").innerText = "";
-                        document.getElementById("matchScore").innerText = "";
-                        document.getElementById("debugLogs").innerText = Array.isArray(data.debugLogs)
-                            ? data.debugLogs.join("\n")
-                            : data.debugLogs || "Reset complete.";
-                    })
-                    .catch(error => {
-                        document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-                    });
-            }
-        });
-    </script>
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById("gameStatus").innerText = "Game Reset.";
+            document.getElementById("passage").innerText = "";
+            document.getElementById("matchScore").innerText = "";
+            document.getElementById("team1Score").innerText = "0";
+            document.getElementById("team2Score").innerText = "0";
+
+            document.getElementById("debugLogs").innerText = Array.isArray(data.debugLogs)
+              ? data.debugLogs.join("\n")
+              : data.debugLogs || "Reset complete.";
+          })
+          .catch(error => {
+            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+          });
+      }
+    });
+  </script>
 </body>
 </html>
