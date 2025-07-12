@@ -13,15 +13,8 @@
       padding: 20px;
     }
 
-    #team1Name {
-      color: #d4af37; /* Dwarven gold */
-      font-weight: bold;
-    }
-
-    #team2Name {
-      color: #90ee90; /* Elven green */
-      font-weight: bold;
-    }
+    #team1Name { color: #d4af37; font-weight: bold; }
+    #team2Name { color: #90ee90; font-weight: bold; }
 
     #scoreboard {
       border: 2px solid #ccc;
@@ -59,9 +52,7 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #666;
-    }
+    button:hover { background-color: #666; }
 
     select {
       font-size: 16px;
@@ -74,7 +65,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.85);
+      background-color: rgba(0,0,0,0.85);
       color: #f0f0f0;
       font-size: 24px;
       font-family: 'Georgia', serif;
@@ -83,15 +74,12 @@
       z-index: 9999;
     }
 
-    #loadingOverlay div {
-      text-align: center;
-    }
+    #loadingOverlay div { text-align: center; }
   </style>
 </head>
 <body>
   <h1>Middle-earth Match Simulator</h1>
 
-  <!-- Scoreboard -->
   <div id="scoreboard">
     <span id="team1Name" style="margin-right: 15px;">🛡️ Dwarves of Khazad-dûm</span>
     <strong id="team1Score">0</strong>
@@ -100,7 +88,6 @@
     <span id="team2Name" style="margin-left: 15px;">🌿 Elves of Lothlórien</span>
   </div>
 
-  <!-- Tactical Selector -->
   <label for="team1Tactic">Dwarven Tactical Choice:</label>
   <br />
   <select id="team1Tactic">
@@ -109,21 +96,16 @@
     <option value="Defend">Defend</option>
   </select>
 
-  <!-- Commentary Box -->
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
-
-  <!-- Game Info -->
   <p id="passage">Loading passage...</p>
   <p id="matchScore">Loading score...</p>
   <p id="debugLogs">Debug Logs: Awaiting response...</p>
   <p id="gameStatus">Awaiting game start...</p>
 
-  <!-- Game Buttons -->
   <button id="startGameButton">Start Game</button>
   <button id="resetGameButton">Reset Game</button>
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" style="display: none;">
+  <div id="loadingOverlay">
     <div>
       🧙‍♂️ Preparing passage...<br />
       <span style="font-size: 16px;">The winds of fate are shifting…</span>
@@ -131,7 +113,8 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbz5MdJYwHekkwAYZ2vI5JNX6sWbrhZ-BdI-2zjHn6yfP01ycJWkapOHeoT3ITPbVojrDg/exec";
+
+        const scriptURL = "https://script.google.com/macros/s/AKfycbz5MdJYwHekkwAYZ2vI5JNX6sWbrhZ-BdI-2zjHn6yfP01ycJWkapOHeoT3ITPbVojrDg/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("startGameButton").addEventListener("click", playPassage);
@@ -148,26 +131,20 @@
           .then(response => response.json())
           .then(data => {
             document.getElementById("loadingOverlay").style.display = "none";
-
             const passageData = data.passageData || {};
 
-            // Scoreboard
             document.getElementById("team1Score").innerText = passageData.team1Score || "0";
             document.getElementById("team2Score").innerText = passageData.team2Score || "0";
-
-            // Passage & Score
             document.getElementById("gameStatus").innerText = "Game Started!";
             document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
             document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
-            // Goal Flash
             if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
               const scoreboard = document.getElementById("scoreboard");
               scoreboard.style.backgroundColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
               setTimeout(() => scoreboard.style.backgroundColor = "#2c2c2c", 800);
             }
 
-            // Lore Commentary
             let commentary = "";
             if (passageData.passageOfPlay.includes("GOAL")) {
               commentary = passageData.possessionWinner === "Team 1"
@@ -180,7 +157,6 @@
             }
             document.getElementById("commentaryBox").innerText = commentary;
 
-            // Debug Logs
             let logOutput = "[LOGS]\n";
             logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
             logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
@@ -201,7 +177,6 @@
 
       function resetGame() {
         document.getElementById("loadingOverlay").style.display = "flex";
-
         const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
         document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
@@ -209,7 +184,6 @@
           .then(response => response.json())
           .then(data => {
             document.getElementById("loadingOverlay").style.display = "none";
-
             document.getElementById("gameStatus").innerText = "Game Reset.";
             document.getElementById("passage").innerText = "";
             document.getElementById("matchScore").innerText = "";
@@ -220,3 +194,14 @@
             const logs = Array.isArray(data.debugLogs)
               ? data.debugLogs.join("\n")
               : data.debugLogs || "Reset complete.";
+            document.getElementById("debugLogs").innerText = logs;
+          })
+          .catch(error => {
+            document.getElementById("loadingOverlay").style.display = "none";
+            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+          });
+      }
+    });
+  </script>
+</body>
+</html>
