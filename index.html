@@ -34,8 +34,10 @@
                         const passageData = data.passageData || {};
                         document.getElementById("gameStatus").innerText = "Game Started!";
                         document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
-                        document.getElementById("debugLogs").innerText = passageData.debugLogs?.join("\n") || "No logs.";
-                        document.getElementById("matchScore").innerText = data.matchScore || "Score unavailable.";
+                        document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
+                        document.getElementById("debugLogs").innerText = Array.isArray(passageData.debugLogs)
+                            ? passageData.debugLogs.join("\n")
+                            : passageData.debugLogs || "No logs.";
                     })
                     .catch(error => {
                         document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
@@ -52,7 +54,9 @@
                         document.getElementById("gameStatus").innerText = "Game Reset.";
                         document.getElementById("passage").innerText = "";
                         document.getElementById("matchScore").innerText = "";
-                        document.getElementById("debugLogs").innerText = data.debugLogs?.join("\n") || "No logs.";
+                        document.getElementById("debugLogs").innerText = Array.isArray(data.debugLogs)
+                            ? data.debugLogs.join("\n")
+                            : data.debugLogs || "Reset complete.";
                     })
                     .catch(error => {
                         document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
