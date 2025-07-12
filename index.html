@@ -12,7 +12,7 @@
     <p id="matchScore">Loading score...</p>
     <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <!-- ✅ Button to start the game (triggers `doGet(e)`) -->
+    <!-- ✅ Button to start the game (triggers `doGet(e)` with action=passage) -->
     <button id="startGameButton">Start Game</button>
 
     <!-- ✅ Reset Game Button -->
@@ -21,68 +21,46 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyvois44eyxSlQ5mhbGNWsEGjHcw6HaQZKzx5S5YJGn1UV-MiBFiyTFs-H-vFG3yIZohA/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxOj4hCdAsQg8KBWOd3rVMlRdqqU_wguJhCtdo5U7-gBT0iNYPVyN8KuIxn_aK--uqyrQ/exec";
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // ✅ Function to trigger `doGet(e)` for passage simulation
+        document.addEventListener("DOMContentLoaded", function () {
             function fetchMatchData() {
-                console.log("[DEBUG] Start Game button clicked!");
-                document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to trigger passage of play...";
-
-                const url = `${scriptURL}?t=${new Date().getTime()}`; // ✅ No `action=startGame`
+                const url = `${scriptURL}?action=passage&t=${new Date().getTime()}`;
                 console.log("[DEBUG] Fetching:", url);
+                document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to start passage simulation...";
 
                 fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("[DEBUG] Response:", data);
-                    document.getElementById("debugLogs").innerText = `[DEBUG] Response from Google Script:\n${JSON.stringify(data, null, 2)}`;
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("[DEBUG] Response:", data);
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${JSON.stringify(data.debugLogs, null, 2)}`;
 
-                    if (data.team1Score !== undefined && data.team2Score !== undefined) {
                         document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
                         document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
-                    } else {
-                        document.getElementById("gameStatus").innerText = "Error: Invalid match data";
-                    }
-
-                    document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Data not available"}`;
-                    document.getElementById("passage").innerText = `${data.passageOfPlay.text || "Awaiting passage update..."} - ${data.passageOfPlay.eventText || "No event recorded"}`;
-                })
-                .catch(error => {
-                    console.error("[ERROR] API Request Failed:", error);
-                    document.getElementById("debugLogs").innerText = `[ERROR] Failed to fetch match data:\n${error}`;
-                });
+                        document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Not determined"}`;
+                        document.getElementById("passage").innerText = `${data.passageOfPlay?.text || "No passage"} - ${data.passageOfPlay?.eventText || "No event"}`;
+                    })
+                    .catch(error => {
+                        console.error("[ERROR] Failed to fetch match data:", error);
+                        document.getElementById("debugLogs").innerText = `[ERROR] Fetch failed:\n${error}`;
+                    });
             }
 
-            // ✅ Reset Game Function
             function resetGame() {
-                console.log("[DEBUG] Reset button clicked!");
-
-                const timestamp = new Date().getTime(); 
-                const resetURL = `${scriptURL}?action=resetGameData&t=${timestamp}`;
-                console.log("[DEBUG] Fetching:", resetURL);
+                const resetURL = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
+                console.log("[DEBUG] Reset Fetch:", resetURL);
+                document.getElementById("debugLogs").innerText = "[DEBUG] Sending reset request...";
 
                 fetch(resetURL)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("[DEBUG] Reset Response:", data);
-                    document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data, null, 2)}`;
-                    document.getElementById("gameStatus").innerText = data.status;
-
-                    document.getElementById("passage").innerText = "Awaiting passage update...";
-                    document.getElementById("matchResults").innerText = "Awaiting match results...";
-                    document.getElementById("matchScore").innerText = "Score: 0 - 0";
-                })
-                .catch(error => {
-                    console.error("[ERROR] Reset Request Failed:", error);
-                    document.getElementById("debugLogs").innerText = `[ERROR] Reset Request Failed:\n${error}`;
-                });
-            }
-
-            // ✅ Attach event listeners
-            document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
-            document.getElementById("resetGameButton").addEventListener("click", resetGame);
-        });
-    </script>
-</body>
-</html>
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("[DEBUG] Reset Response:", data);
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data.debugLogs, null, 2)}`;
+                        document.getElementById("gameStatus").innerText = data.status || "Game reset";
+                        document.getElementById("passage").innerText = "Awaiting passage update...";
+                        document.getElementById("matchResults").innerText = "Awaiting match results...";
+                        document.getElementById("matchScore").innerText = "Score: 0 - 0";
+                    })
+                    .catch(error => {
+                        console.error("[ERROR] Reset failed:", error);
+                        document.getElement
