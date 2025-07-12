@@ -21,56 +21,29 @@
         const scriptURL = "https://script.google.com/macros/s/AKfycbzKpeIUtJNASfKdSkG2EKhJqQ3nEYP7RLqZE9Y3DwrqYWkpAbb_WlTZQTxcmuPAkRogZQ/exec";
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Optional initial fetch, if you'd like to load a passage on page load
-            fetchMatchData();
-
             document.getElementById("startGameButton").addEventListener("click", startGame);
             document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
-            function fetchMatchData() {
-                const url = `${scriptURL}?action=passage&t=${new Date().getTime()}`;
-                console.log("[STEP 1] Fetching match data:", url);
-                document.getElementById("debugLogs").innerText = "[STEP 1] Fetching match data...";
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("[STEP 2] Parsed JSON:", data);
-                        const passageData = data.passageData || {};
-                        const passage = passageData.passageOfPlay || "No passage returned.";
-                        const logs = passageData.debugLogs || "No logs.";
-                        const score = data.matchScore || "N/A";
-
-                        document.getElementById("passage").innerText = passage;
-                        document.getElementById("debugLogs").innerText = logs;
-                        document.getElementById("matchScore").innerText = score;
-                    })
-                    .catch(error => {
-                        console.error("[ERROR] Fetch failed:", error);
-                        document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-                    });
-            }
-
             function startGame() {
-                const url = `${scriptURL}?action=startGame&t=${new Date().getTime()}`;
-                document.getElementById("debugLogs").innerText = "[START GAME] Starting game...";
+                const url = `${scriptURL}?action=passage&t=${new Date().getTime()}`;
+                document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
+                        const passageData = data.passageData || {};
                         document.getElementById("gameStatus").innerText = "Game Started!";
-                        document.getElementById("passage").innerText = data.passage || "No passage data.";
-                        document.getElementById("debugLogs").innerText = data.debugLogs || "No logs.";
+                        document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
+                        document.getElementById("debugLogs").innerText = passageData.debugLogs?.join("\n") || "No logs.";
                         document.getElementById("matchScore").innerText = data.matchScore || "Score unavailable.";
                     })
                     .catch(error => {
-                        console.error("[START GAME] Error:", error);
                         document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
                     });
             }
 
             function resetGame() {
-                const url = `${scriptURL}?action=resetGame&t=${new Date().getTime()}`;
+                const url = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
                 document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
                 fetch(url)
@@ -79,10 +52,9 @@
                         document.getElementById("gameStatus").innerText = "Game Reset.";
                         document.getElementById("passage").innerText = "";
                         document.getElementById("matchScore").innerText = "";
-                        document.getElementById("debugLogs").innerText = data.debugLogs || "Reset complete, no logs.";
+                        document.getElementById("debugLogs").innerText = data.debugLogs?.join("\n") || "No logs.";
                     })
                     .catch(error => {
-                        console.error("[RESET GAME] Error:", error);
                         document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
                     });
             }
