@@ -2,27 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Match Sim</title>
+  <title>Middle-earth Match Sim</title>
+  <style>
+    body {
+      background-color: #1c1c1c;
+      color: #f0f0f0;
+      font-family: 'Georgia', serif;
+      text-align: center;
+    }
+
+    #team1Name {
+      color: #d4af37; /* Gold for Dwarves */
+      font-weight: bold;
+    }
+
+    #team2Name {
+      color: #90ee90; /* Green for Elves */
+      font-weight: bold;
+    }
+
+    #scoreboard {
+      border: 2px solid #ccc;
+      padding: 10px;
+      background-color: #2c2c2c;
+      border-radius: 8px;
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+
+    select {
+      font-size: 16px;
+      padding: 6px;
+    }
+
+    #passage {
+      font-size: 20px;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    #commentaryBox {
+      font-style: italic;
+      color: #ccc;
+      margin-top: 15px;
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Passage of Play</h1>
+  <h1>Middle-earth Match Simulator</h1>
 
   <!-- Scoreboard -->
-  <div id="scoreboard" style="display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 20px;">
-    <span id="team1Name" style="margin-right: 15px;">Team 1</span>
+  <div id="scoreboard">
+    <span id="team1Name" style="margin-right: 15px;">🛡️ Dwarves of Khazad-dûm</span>
     <strong id="team1Score">0</strong>
     <span style="margin: 0 10px;">⚔️</span>
     <strong id="team2Score">0</strong>
-    <span id="team2Name" style="margin-left: 15px;">Team 2</span>
+    <span id="team2Name" style="margin-left: 15px;">🌿 Elves of Lothlórien</span>
   </div>
 
   <!-- Tactical Selector -->
-  <label for="team1Tactic">Team 1 Tactical Choice:</label>
+  <label for="team1Tactic">Dwarven Tactical Choice:</label>
   <select id="team1Tactic">
     <option value="Attack">Attack</option>
     <option value="Hold" selected>Hold</option>
     <option value="Defend">Defend</option>
   </select>
+
+  <!-- Commentary Box -->
+  <p id="commentaryBox">Let the clash begin under ancient skies…</p>
 
   <!-- Game Info -->
   <p id="passage">Loading passage...</p>
@@ -36,7 +102,7 @@
   <p id="gameStatus">Awaiting game start...</p>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwF6R3GNElH_sLmNmHLjfHsaP6CYyzXlHlcY68a6JFWcliOOlk6Hh7vHEVQQRju9pfRbA/exec";
+    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("startGameButton").addEventListener("click", playPassage);
@@ -60,6 +126,27 @@
             document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
             document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
+            // Goal flash
+            if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
+              const scoreboard = document.getElementById("scoreboard");
+              scoreboard.style.backgroundColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
+              setTimeout(() => scoreboard.style.backgroundColor = "#2c2c2c", 800);
+            }
+
+            // Commentary
+            let commentary = "";
+            if (passageData.passageOfPlay.includes("GOAL")) {
+              commentary = passageData.possessionWinner === "Team 1"
+                ? "A mighty blow lands from beneath the mountain halls!"
+                : "Swift as starlight, the Elves strike true!";
+            } else {
+              commentary = passageData.possessionWinner === "Team 1"
+                ? "Axes gleam as Khazad-dûm holds the line."
+                : "Leaves whisper as Lothlórien secures control.";
+            }
+            document.getElementById("commentaryBox").innerText = commentary;
+
+            // Logs
             let logOutput = "[LOGS]\n";
             logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
             logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
@@ -89,6 +176,7 @@
             document.getElementById("matchScore").innerText = "";
             document.getElementById("team1Score").innerText = "0";
             document.getElementById("team2Score").innerText = "0";
+            document.getElementById("commentaryBox").innerText = "Let the clash begin under ancient skies…";
 
             const logs = Array.isArray(data.debugLogs)
               ? data.debugLogs.join("\n")
