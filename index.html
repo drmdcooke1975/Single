@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Passage Viewer 1</title>
+    <title>Passage Viewer</title>
 </head>
 <body>
     <h1>Passage of Play</h1>
+
+    <!-- Team 1 Tactical Choice Dropdown -->
+    <label for="team1Tactic">Team 1 Tactical Choice:</label>
+    <select id="team1Tactic">
+        <option value="Attack">Attack</option>
+        <option value="Hold" selected>Hold</option>
+        <option value="Defend">Defend</option>
+    </select>
 
     <p id="passage">Loading passage...</p>
     <p id="matchResults">Loading match results...</p>
@@ -18,26 +26,38 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbz-6oTeGIeqEmIJhbP0eme-sJxy_0lPCptZPETnSX252MZ_UULT1xS2DG73pfYr5HycvA/exec";
+        const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
 
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("startGameButton").addEventListener("click", startGame);
+            document.getElementById("startGameButton").addEventListener("click", playPassage);
             document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
-            function startGame() {
-                const url = `${scriptURL}?action=passage&t=${new Date().getTime()}`;
+            function playPassage() {
+                const tactic = document.getElementById("team1Tactic").value;
+                const url = `${scriptURL}?action=passage&tactic=${tactic}&t=${new Date().getTime()}`;
                 document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
                         const passageData = data.passageData || {};
+                        let logOutput = "[LOGS]\n";
+                        logOutput += `Initial Passage Count: ${passageData.passagesPlayed - 1}\n`;
+                        logOutput += `Updated Passage Count: ${passageData.passagesPlayed}\n`;
+                        logOutput += `Status: ${passageData.status}\n`;
+                        logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
+                        logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
+                        logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
+                        logOutput += `Team 1 Score: ${passageData.team1Score}\n`;
+                        logOutput += `Team 2 Score: ${passageData.team2Score}\n\n`;
+                        if (Array.isArray(passageData.debugLogs)) {
+                            logOutput += passageData.debugLogs.join("\n");
+                        }
+
                         document.getElementById("gameStatus").innerText = "Game Started!";
                         document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
                         document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
-                        document.getElementById("debugLogs").innerText = Array.isArray(passageData.debugLogs)
-                            ? passageData.debugLogs.join("\n")
-                            : passageData.debugLogs || "No logs.";
+                        document.getElementById("debugLogs").innerText = logOutput;
                     })
                     .catch(error => {
                         document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
