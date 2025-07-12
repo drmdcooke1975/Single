@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Passage Viewer</title>
+    <title>Passage Viewer V10:51 12 July 2025</title>
 </head>
 <body>
     <h1>Passage of Play</h1>
@@ -12,10 +12,7 @@
     <p id="matchScore">Loading score...</p>
     <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
-    <!-- ✅ Button to start the game (triggers `doGet(e)` with action=passage) -->
     <button id="startGameButton">Start Game</button>
-
-    <!-- ✅ Reset Game Button -->
     <button id="resetGameButton">Reset Game</button>
 
     <p id="gameStatus">Awaiting game start...</p>
@@ -32,13 +29,12 @@
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("[DEBUG] Response:", data);
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${JSON.stringify(data.debugLogs, null, 2)}`;
-
-                        document.getElementById("matchScore").innerText = `Score: ${data.team1Score} - ${data.team2Score}`;
-                        document.getElementById("gameStatus").innerText = `Team 1: ${data.team1Score} | Team 2: ${data.team2Score}`;
-                        document.getElementById("matchResults").innerText = `Possession: ${data.possessionWinner || "Not determined"}`;
-                        document.getElementById("passage").innerText = `${data.passageOfPlay?.text || "No passage"} - ${data.passageOfPlay?.eventText || "No event"}`;
+                        const passage = data.passageData?.passageOfPlay || {};
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${JSON.stringify(data.passageData?.debugLogs || ["No logs"], null, 2)}`;
+                        document.getElementById("matchScore").innerText = `Score: ${data.passageData?.team1Score} - ${data.passageData?.team2Score}`;
+                        document.getElementById("gameStatus").innerText = `Team 1: ${data.passageData?.team1Score} | Team 2: ${data.passageData?.team2Score}`;
+                        document.getElementById("matchResults").innerText = `Possession: ${data.passageData?.possessionWinner || "Not determined"}`;
+                        document.getElementById("passage").innerText = `${passage.text || "No passage"} - ${passage.eventText || "No event"}`;
                     })
                     .catch(error => {
                         console.error("[ERROR] Failed to fetch match data:", error);
@@ -54,8 +50,7 @@
                 fetch(resetURL)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("[DEBUG] Reset Response:", data);
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data.debugLogs, null, 2)}`;
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data.debugLogs || ["No logs"], null, 2)}`;
                         document.getElementById("gameStatus").innerText = data.status || "Game reset";
                         document.getElementById("passage").innerText = "Awaiting passage update...";
                         document.getElementById("matchResults").innerText = "Awaiting match results...";
@@ -63,4 +58,13 @@
                     })
                     .catch(error => {
                         console.error("[ERROR] Reset failed:", error);
-                        document.getElement
+                        document.getElementById("debugLogs").innerText = `[ERROR] Reset failed:\n${error}`;
+                    });
+            }
+
+            document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
+            document.getElementById("resetGameButton").addEventListener("click", resetGame);
+        });
+    </script>
+</body>
+</html>
