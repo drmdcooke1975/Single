@@ -26,18 +26,17 @@
 
   <!-- Game Info -->
   <p id="passage">Loading passage...</p>
-  <p id="matchResults">Loading match results...</p>
   <p id="matchScore">Loading score...</p>
   <p id="debugLogs">Debug Logs: Awaiting response...</p>
 
   <!-- Game Buttons -->
-  <button id="startGameButton">Start Game Passage</button>
+  <button id="startGameButton">Start Game</button>
   <button id="resetGameButton">Reset Game</button>
 
   <p id="gameStatus">Awaiting game start...</p>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzHW7xwQoKutqLq4AeDpyggSw6DttXUJx-Dq1lHvdqMYswpxw1EtEivH42xr-Ay3V9DkA/exec";
+    const scriptURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("startGameButton").addEventListener("click", playPassage);
@@ -45,7 +44,7 @@
 
       function playPassage() {
         const tactic = document.getElementById("team1Tactic").value;
-        const url = `${scriptURL}?action=passage&tactic=${tactic}&t=${new Date().getTime()}`;
+        const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
         document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
         fetch(url)
@@ -54,21 +53,20 @@
             const passageData = data.passageData || {};
 
             // Update scoreboard
-            document.getElementById("team1Score").innerText = passageData.team1Score;
-            document.getElementById("team2Score").innerText = passageData.team2Score;
+            document.getElementById("team1Score").innerText = passageData.team1Score || "0";
+            document.getElementById("team2Score").innerText = passageData.team2Score || "0";
 
-            // Update UI fields
             document.getElementById("gameStatus").innerText = "Game Started!";
             document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
             document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
             let logOutput = "[LOGS]\n";
             logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
-            logOutput += `Status: ${passageData.status}\n`;
             logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
             logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
             logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
             logOutput += `Score: ${passageData.team1Score} - ${passageData.team2Score}\n\n`;
+
             if (Array.isArray(passageData.debugLogs)) {
               logOutput += passageData.debugLogs.join("\n");
             }
@@ -80,7 +78,7 @@
       }
 
       function resetGame() {
-        const url = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
+        const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
         document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
         fetch(url)
@@ -92,9 +90,10 @@
             document.getElementById("team1Score").innerText = "0";
             document.getElementById("team2Score").innerText = "0";
 
-            document.getElementById("debugLogs").innerText = Array.isArray(data.debugLogs)
+            const logs = Array.isArray(data.debugLogs)
               ? data.debugLogs.join("\n")
               : data.debugLogs || "Reset complete.";
+            document.getElementById("debugLogs").innerText = logs;
           })
           .catch(error => {
             document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
