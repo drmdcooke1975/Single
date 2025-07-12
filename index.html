@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Passage Viewer 2</title>
+    <title>Passage Viewer</title>
 </head>
 <body>
     <h1>Passage of Play</h1>
@@ -30,9 +30,11 @@
                     .then(response => response.json())
                     .then(data => {
                         const passage = data.passageData?.passageOfPlay || {};
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${JSON.stringify(data.passageData?.debugLogs || ["No logs"], null, 2)}`;
+                        const logs = data.passageData?.debugLogs || [];
+
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${logs.join("\n")}`;
                         document.getElementById("matchScore").innerText = `Score: ${data.passageData?.team1Score} - ${data.passageData?.team2Score}`;
-                        document.getElementById("gameStatus").innerText = `Team 1: ${data.passageData?.team1Score} | Team 2: ${data.passageData?.team2Score}`;
+                        document.getElementById("gameStatus").innerText = data.passageData?.status || "Simulation status unknown";
                         document.getElementById("matchResults").innerText = `Possession: ${data.passageData?.possessionWinner || "Not determined"}`;
                         document.getElementById("passage").innerText = `${passage.text || "No passage"} - ${passage.eventText || "No event"}`;
                     })
@@ -50,7 +52,9 @@
                 fetch(resetURL)
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${JSON.stringify(data.debugLogs || ["No logs"], null, 2)}`;
+                        const logs = data.debugLogs || [];
+
+                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${logs.join("\n")}`;
                         document.getElementById("gameStatus").innerText = data.status || "Game reset";
                         document.getElementById("passage").innerText = "Awaiting passage update...";
                         document.getElementById("matchResults").innerText = "Awaiting match results...";
