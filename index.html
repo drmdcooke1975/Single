@@ -7,6 +7,15 @@
 <body>
     <h1>Passage of Play</h1>
 
+    <div id="scoreboard" style="display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 20px;">
+  <span id="team1Name" style="margin-right: 15px;">Team 1</span>
+  <strong id="team1Score">0</strong>
+  <span style="margin: 0 10px;">⚔️</span>
+  <strong id="team2Score">0</strong>
+  <span id="team2Name" style="margin-left: 15px;">Team 2</span>
+</div>
+
+
     <!-- Team 1 Tactical Choice Dropdown -->
     <label for="team1Tactic">Team 1 Tactical Choice:</label>
     <select id="team1Tactic">
@@ -26,7 +35,7 @@
     <p id="gameStatus">Awaiting game start...</p>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyG7YWTHPiyfkwU1asrObIY7dofx3mkJ9ls_bzm8SHq5d9zqnYzn8HIDQQiAU7u2ZxMYg/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxrDtB6WofKklJSZ_RrwDelPhWYFEUO3cS8MwLIYU0NfzL7vh0OEpW5mqDb7wzWC3l2Dg/exec";
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("startGameButton").addEventListener("click", playPassage);
