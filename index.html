@@ -2,22 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Middle-earth Match Sim</title>
+  <title>Middle-earth Match Simulator</title>
   <style>
     body {
       background-color: #1c1c1c;
       color: #f0f0f0;
       font-family: 'Georgia', serif;
       text-align: center;
+      margin: 0;
+      padding: 20px;
     }
 
     #team1Name {
-      color: #d4af37; /* Gold for Dwarves */
+      color: #d4af37; /* Dwarven gold */
       font-weight: bold;
     }
 
     #team2Name {
-      color: #90ee90; /* Green for Elves */
+      color: #90ee90; /* Elven green */
       font-weight: bold;
     }
 
@@ -31,6 +33,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    #passage {
+      font-size: 20px;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    #commentaryBox {
+      font-style: italic;
+      color: #ccc;
+      margin-top: 15px;
+      font-size: 18px;
     }
 
     button {
@@ -51,19 +66,25 @@
     select {
       font-size: 16px;
       padding: 6px;
+      margin-top: 10px;
     }
 
-    #passage {
-      font-size: 20px;
-      font-style: italic;
-      margin-top: 20px;
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      color: #f0f0f0;
+      font-size: 24px;
+      font-family: 'Georgia', serif;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
     }
 
-    #commentaryBox {
-      font-style: italic;
-      color: #ccc;
-      margin-top: 15px;
-      font-size: 18px;
+    #loadingOverlay div {
+      text-align: center;
     }
   </style>
 </head>
@@ -81,6 +102,7 @@
 
   <!-- Tactical Selector -->
   <label for="team1Tactic">Dwarven Tactical Choice:</label>
+  <br />
   <select id="team1Tactic">
     <option value="Attack">Attack</option>
     <option value="Hold" selected>Hold</option>
@@ -94,12 +116,19 @@
   <p id="passage">Loading passage...</p>
   <p id="matchScore">Loading score...</p>
   <p id="debugLogs">Debug Logs: Awaiting response...</p>
+  <p id="gameStatus">Awaiting game start...</p>
 
   <!-- Game Buttons -->
   <button id="startGameButton">Start Game</button>
   <button id="resetGameButton">Reset Game</button>
 
-  <p id="gameStatus">Awaiting game start...</p>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" style="display: none;">
+    <div>
+      🧙‍♂️ Preparing passage...<br />
+      <span style="font-size: 16px;">The winds of fate are shifting…</span>
+    </div>
+  </div>
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbynaAYnnHK-9c3DcU3yt8QO677CY2DpsqMFyPvqfk3DyBblzOIVP25Gv2249AbVIevH8w/exec";
@@ -109,6 +138,8 @@
       document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
       function playPassage() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+
         const tactic = document.getElementById("team1Tactic").value;
         const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
         document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
@@ -116,24 +147,27 @@
         fetch(url)
           .then(response => response.json())
           .then(data => {
+            document.getElementById("loadingOverlay").style.display = "none";
+
             const passageData = data.passageData || {};
 
-            // Update scoreboard
+            // Scoreboard
             document.getElementById("team1Score").innerText = passageData.team1Score || "0";
             document.getElementById("team2Score").innerText = passageData.team2Score || "0";
 
+            // Passage & Score
             document.getElementById("gameStatus").innerText = "Game Started!";
             document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
             document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
-            // Goal flash
+            // Goal Flash
             if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
               const scoreboard = document.getElementById("scoreboard");
               scoreboard.style.backgroundColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
               setTimeout(() => scoreboard.style.backgroundColor = "#2c2c2c", 800);
             }
 
-            // Commentary
+            // Lore Commentary
             let commentary = "";
             if (passageData.passageOfPlay.includes("GOAL")) {
               commentary = passageData.possessionWinner === "Team 1"
@@ -146,7 +180,7 @@
             }
             document.getElementById("commentaryBox").innerText = commentary;
 
-            // Logs
+            // Debug Logs
             let logOutput = "[LOGS]\n";
             logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
             logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
@@ -160,17 +194,22 @@
             document.getElementById("debugLogs").innerText = logOutput;
           })
           .catch(error => {
+            document.getElementById("loadingOverlay").style.display = "none";
             document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
           });
       }
 
       function resetGame() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+
         const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
         document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
         fetch(url)
           .then(response => response.json())
           .then(data => {
+            document.getElementById("loadingOverlay").style.display = "none";
+
             document.getElementById("gameStatus").innerText = "Game Reset.";
             document.getElementById("passage").innerText = "";
             document.getElementById("matchScore").innerText = "";
@@ -181,13 +220,3 @@
             const logs = Array.isArray(data.debugLogs)
               ? data.debugLogs.join("\n")
               : data.debugLogs || "Reset complete.";
-            document.getElementById("debugLogs").innerText = logs;
-          })
-          .catch(error => {
-            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-          });
-      }
-    });
-  </script>
-</body>
-</html>
