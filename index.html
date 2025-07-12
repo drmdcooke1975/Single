@@ -23,52 +23,18 @@
         document.addEventListener("DOMContentLoaded", function () {
             function fetchMatchData() {
                 const url = `${scriptURL}?action=passage&t=${new Date().getTime()}`;
-                console.log("[DEBUG] Fetching:", url);
-                document.getElementById("debugLogs").innerText = "[DEBUG] Sending GET request to start passage simulation...";
+                console.log("[STEP 1] Fetching match data:", url);
+                document.getElementById("debugLogs").innerText = "[STEP 1] Fetching match data...";
 
                 fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const passage = data.passageData?.passageOfPlay || {};
-                        const logs = data.passageData?.debugLogs || [];
-
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Response:\n${logs.join("\n")}`;
-                        document.getElementById("matchScore").innerText = `Score: ${data.passageData?.team1Score} - ${data.passageData?.team2Score}`;
-                        document.getElementById("gameStatus").innerText = data.passageData?.status || "Simulation status unknown";
-                        document.getElementById("matchResults").innerText = `Possession: ${data.passageData?.possessionWinner || "Not determined"}`;
-                        document.getElementById("passage").innerText = `${passage.text || "No passage"} - ${passage.eventText || "No event"}`;
+                    .then(response => {
+                        console.log("[STEP 2] Response received");
+                        return response.json();
                     })
-                    .catch(error => {
-                        console.error("[ERROR] Failed to fetch match data:", error);
-                        document.getElementById("debugLogs").innerText = `[ERROR] Fetch failed:\n${error}`;
-                    });
-            }
-
-            function resetGame() {
-                const resetURL = `${scriptURL}?action=resetGameData&t=${new Date().getTime()}`;
-                console.log("[DEBUG] Reset Fetch:", resetURL);
-                document.getElementById("debugLogs").innerText = "[DEBUG] Sending reset request...";
-
-                fetch(resetURL)
-                    .then(response => response.json())
                     .then(data => {
-                        const logs = data.debugLogs || [];
+                        console.log("[STEP 3] Parsed JSON:", data);
+                        const passageData = data.passageData || {};
+                        const passage = passageData.passageOfPlay || {};
+                        const logs = passageData.debugLogs || [];
 
-                        document.getElementById("debugLogs").innerText = `[DEBUG] Reset Response:\n${logs.join("\n")}`;
-                        document.getElementById("gameStatus").innerText = data.status || "Game reset";
-                        document.getElementById("passage").innerText = "Awaiting passage update...";
-                        document.getElementById("matchResults").innerText = "Awaiting match results...";
-                        document.getElementById("matchScore").innerText = "Score: 0 - 0";
-                    })
-                    .catch(error => {
-                        console.error("[ERROR] Reset failed:", error);
-                        document.getElementById("debugLogs").innerText = `[ERROR] Reset failed:\n${error}`;
-                    });
-            }
-
-            document.getElementById("startGameButton").addEventListener("click", fetchMatchData);
-            document.getElementById("resetGameButton").addEventListener("click", resetGame);
-        });
-    </script>
-</body>
-</html>
+                        console.log("[STEP 4] Passage Data:", passage);
