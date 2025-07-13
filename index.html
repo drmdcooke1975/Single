@@ -34,12 +34,14 @@
       margin-top: 20px;
     }
 
-    #commentaryBox {
-      font-style: italic;
-      color: #ccc;
-      margin-top: 15px;
-      font-size: 18px;
-    }
+    
+#commentaryBox {
+  font-style: italic;
+  color: #ccc;
+  margin-top: 15px;
+  font-size: 18px;
+  white-space: pre-line;
+}
 
     button {
       margin: 10px;
@@ -212,17 +214,17 @@ function spawnRuneSparkle(char) {
           document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
           const scoreboard = document.getElementById("scoreboard");
-          if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
-            scoreboard.classList.add("flash");
-            setTimeout(() => scoreboard.classList.remove("flash"), 800);
-          }
-
-// not sure if need one above or not soleft both
+          // if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
+           // scoreboard.classList.add("flash");
+           // setTimeout(() => scoreboard.classList.remove("flash"), 800);
+          // }
 if (passageData.passageOfPlay.includes("GOAL")) {
   scoreboard.classList.add("flash");
   setTimeout(() => scoreboard.classList.remove("flash"), 800);
   spawnRuneSparkle("✨");
 }
+
+
 
 
 
@@ -241,7 +243,8 @@ if (passageData.passageOfPlay.includes("GOAL")) {
               ? "Axes gleam as Khazad-dûm holds the line."
               : "Leaves whisper as Lothlórien secures control.";
           }
-          typeCommentary(commentary.trim().replace(/\s+/g, ' '));
+          typeCommentary(commentary);
+
 
 
           let logOutput = "[LOGS]\n";
