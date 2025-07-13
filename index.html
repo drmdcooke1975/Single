@@ -291,17 +291,18 @@ if (passageData.passageOfPlay.includes("GOAL")) {
           document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
         });
     }
+function typeCommentary(text) {
+  const box = document.getElementById("commentaryBox");
+  box.textContent = ""; // more reliable than innerText
+  box.style.whiteSpace = "pre-line"; // preserves spaces and line breaks
+  let i = 0;
+  const timer = setInterval(() => {
+    box.textContent += text.charAt(i);
+    i++;
+    if (i === text.length) clearInterval(timer);
+  }, 25);
+}
 
-    function typeCommentary(text) {
-      const box = document.getElementById("commentaryBox");
-      box.innerText = "";
-      let i = 0;
-      const timer = setInterval(() => {
-        box.innerText += text.charAt(i);
-        i++;
-        if (i === text.length) clearInterval(timer);
-      }, 25);
-    }
   });
 </script>
 
