@@ -217,7 +217,7 @@ function spawnRuneSparkle(char) {
             setTimeout(() => scoreboard.classList.remove("flash"), 800);
           }
 
-
+// not sure if need one above or not soleft both
 if (passageData.passageOfPlay.includes("GOAL")) {
   scoreboard.classList.add("flash");
   setTimeout(() => scoreboard.classList.remove("flash"), 800);
@@ -241,7 +241,8 @@ if (passageData.passageOfPlay.includes("GOAL")) {
               ? "Axes gleam as Khazad-dûm holds the line."
               : "Leaves whisper as Lothlórien secures control.";
           }
-          typeCommentary(commentary);
+          typeCommentary(commentary.trim().replace(/\s+/g, ' '));
+
 
           let logOutput = "[LOGS]\n";
           logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
