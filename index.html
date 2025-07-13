@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Middle-earth Match Simulator</title>
@@ -16,15 +14,6 @@
     #team1Name { color: #d4af37; font-weight: bold; }
     #team2Name { color: #90ee90; font-weight: bold; }
 
-    
-<svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
-  <rect id="zoneLeft" x="0" y="0" width="106" height="100" fill="#2c2c2c" />
-  <rect id="zoneCenter" x="106" y="0" width="106" height="100" fill="#2c2c2c" />
-  <rect id="zoneRight" x="212" y="0" width="108" height="100" fill="#2c2c2c" />
-</svg>
-
-
-    
     #scoreboard {
       border: 2px solid #ccc;
       padding: 10px;
@@ -43,14 +32,13 @@
       margin-top: 20px;
     }
 
-    
-#commentaryBox {
-  font-style: italic;
-  color: #ccc;
-  margin-top: 15px;
-  font-size: 18px;
-  white-space: pre-line;
-}
+    #commentaryBox {
+      font-style: italic;
+      color: #ccc;
+      margin-top: 15px;
+      font-size: 18px;
+      white-space: pre-line;
+    }
 
     button {
       margin: 10px;
@@ -87,84 +75,48 @@
 
     #loadingOverlay div { text-align: center; }
 
-  
-
+    /* 🪄 Animations */
     @keyframes goalFlash {
-  0%   { background-color: #2c2c2c; }
-  50%  { background-color: gold; }
-  100% { background-color: #2c2c2c; }
-}
+      0%   { background-color: #2c2c2c; }
+      50%  { background-color: gold; }
+      100% { background-color: #2c2c2c; }
+    }
 
-@keyframes tacticPulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
+    @keyframes tacticPulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
 
-/* Apply animation classes dynamically from JS */
+    @keyframes runeDrift {
+      0%   { opacity: 0; transform: translateY(10px); }
+      50%  { opacity: 0.6; transform: translateY(-5px); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
 
-.flash {
-  animation: goalFlash 0.8s ease;
-}
+    .flash { animation: goalFlash 0.8s ease; }
+    .pulse { animation: tacticPulse 0.5s ease; }
 
-.pulse {
-  animation: tacticPulse 0.5s ease;
-}
+    .runeSparkle {
+      animation: runeDrift 1.2s ease-in-out;
+      position: absolute;
+      font-size: 20px;
+      left: 50%;
+      top: 60%;
+      transform: translate(-50%, -50%);
+      color: gold;
+      pointer-events: none;
+      z-index: 10;
+    }
 
-
-    @keyframes goalFlash {
-  0%   { background-color: #2c2c2c; }
-  50%  { background-color: gold; }
-  100% { background-color: #2c2c2c; }
-}
-
-@keyframes tacticPulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-@keyframes runeDrift {
-  0%   { opacity: 0; transform: translateY(10px); }
-  50%  { opacity: 0.6; transform: translateY(-5px); }
-  100% { opacity: 0; transform: translateY(-20px); }
-}
-
-.flash {
-  animation: goalFlash 0.8s ease;
-}
-
-.pulse {
-  animation: tacticPulse 0.5s ease;
-}
-
-.runeSparkle {
-  animation: runeDrift 1.2s ease-in-out;
-  position: absolute;
-  font-size: 20px;
-  left: 50%;
-  top: 60%;
-  transform: translate(-50%, -50%);
-  color: gold;
-  pointer-events: none;
-  z-index: 10;
-}
-    
-function spawnRuneSparkle(char) {
-  const sparkle = document.createElement("div");
-  sparkle.className = "runeSparkle";
-  sparkle.textContent = char;
-  document.body.appendChild(sparkle);
-  setTimeout(() => sparkle.remove(), 1200);
-}
-
+    /* 🧭 Tactical Map Zones */
     #tacticalMap rect {
-  transition: fill 0.4s ease;
-}
-
-    
+      transition: fill 0.4s ease;
+    }
   </style>
 </head>
+
+
 <body>
   <h1>Middle-earth Match Simulator</h1>
 
@@ -178,24 +130,25 @@ function spawnRuneSparkle(char) {
 
   <label for="team1Tactic">Dwarven Tactical Choice:</label>
   <br />
-
-  
-<select id="team1Tactic">
-  <option value="Attack" title="Charge forth with fury">Attack</option>
-  <option value="Hold" title="Brace against the storm" selected>Hold</option>
-  <option value="Defend" title="Guard the ancient walls">Defend</option>
-</select>
-
+  <select id="team1Tactic">
+    <option value="Attack" title="Charge forth with fury">Attack</option>
+    <option value="Hold" title="Brace against the storm" selected>Hold</option>
+    <option value="Defend" title="Guard the ancient walls">Defend</option>
+  </select>
 
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
   <p id="passage">Loading passage...</p>
   <p id="matchScore">Loading score...</p>
   <p id="debugLogs">Debug Logs: Awaiting response...</p>
   <p id="gameStatus">Awaiting game start...</p>
+  <p id="passageCounter">Passages Played: 0</p>
 
-<p id="passageCounter">Passages Played: 0</p>
- 
-  
+  <svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
+    <rect id="zoneLeft" x="0" y="0" width="106" height="100" fill="#2c2c2c" />
+    <rect id="zoneCenter" x="106" y="0" width="106" height="100" fill="#2c2c2c" />
+    <rect id="zoneRight" x="212" y="0" width="108" height="100" fill="#2c2c2c" />
+  </svg>
+
   <button id="startGameButton">Start Game Passage</button>
   <button id="resetGameButton">Reset Game</button>
 
@@ -205,8 +158,9 @@ function spawnRuneSparkle(char) {
       <span style="font-size: 16px;">The winds of fate are shifting…</span>
     </div>
   </div>
+</body>
 
- <script>
+<script>
   const scriptURL = "https://script.google.com/macros/s/AKfycbw69SfxYtVg-o-lIW3gN31se1sJHfvnufB1lUi461dLptGHvhAAdsRHkfmMEtuTaUpkgg/exec";
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -226,54 +180,40 @@ function spawnRuneSparkle(char) {
           document.getElementById("loadingOverlay").style.display = "none";
           const passageData = data.passageData || {};
 
+          // Score + match info
           document.getElementById("team1Score").innerText = passageData.team1Score || "0";
           document.getElementById("team2Score").innerText = passageData.team2Score || "0";
           document.getElementById("gameStatus").innerText = "Game Started!";
           document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
           document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
+          document.getElementById("passageCounter").innerText = `Passages Played: ${passageData.passagesPlayed}`;
 
-document.getElementById("passageCounter").innerText = `Passages Played: ${passageData.passagesPlayed}`;
+          // Tactical map update
+          const zoneLeft = document.getElementById("zoneLeft");
+          const zoneCenter = document.getElementById("zoneCenter");
+          const zoneRight = document.getElementById("zoneRight");
 
-const zoneLeft = document.getElementById("zoneLeft");
-const zoneCenter = document.getElementById("zoneCenter");
-const zoneRight = document.getElementById("zoneRight");
+          zoneLeft.setAttribute("fill", "#2c2c2c");
+          zoneCenter.setAttribute("fill", "#2c2c2c");
+          zoneRight.setAttribute("fill", "#2c2c2c");
 
-// Reset zones
-zoneLeft.setAttribute("fill", "#2c2c2c");
-zoneCenter.setAttribute("fill", "#2c2c2c");
-zoneRight.setAttribute("fill", "#2c2c2c");
+          const possessionColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
+          zoneCenter.setAttribute("fill", possessionColor);
 
-// Highlight based on possession
-const possessionColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
-zoneCenter.setAttribute("fill", possessionColor); // You can randomize zone later
+          // Goal effects
+          if (passageData.passageOfPlay.includes("GOAL")) {
+            const scoreboard = document.getElementById("scoreboard");
+            scoreboard.classList.add("flash");
+            setTimeout(() => scoreboard.classList.remove("flash"), 800);
+            spawnRuneSparkle("⚽");
+          }
 
-          
-          const scoreboard = document.getElementById("scoreboard");
-          // if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
-           // scoreboard.classList.add("flash");
-           // setTimeout(() => scoreboard.classList.remove("flash"), 800);
-          // }
-if (passageData.passageOfPlay.includes("GOAL")) {
- 
-
-scoreboard.classList.add("flash");
-setTimeout(() => scoreboard.classList.remove("flash"), 800);
-spawnRuneSparkle("⚽"); // You can also try "🎉", "🪄", etc.
-
-
-
-  
-}
-
-
-
-
-
-          
+          // Tactic pulse
           const tacticDropdown = document.getElementById("team1Tactic");
           tacticDropdown.classList.add("pulse");
           setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
 
+          // Commentary
           let commentary = "";
           if (passageData.passageOfPlay.includes("GOAL")) {
             commentary = passageData.possessionWinner === "Team 1"
@@ -284,14 +224,14 @@ spawnRuneSparkle("⚽"); // You can also try "🎉", "🪄", etc.
               ? "Axes gleam as Khazad-dûm holds the line."
               : "Leaves whisper as Lothlórien secures control.";
           }
+
           if (passageData.passagesPlayed > 7) {
-  commentary += " The tension thickens in the final passages...";
-}
+            commentary += " The tension thickens in the final passages...";
+          }
 
           typeCommentary(commentary);
 
-
-
+          // Debug logs
           let logOutput = "[LOGS]\n";
           logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
           logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
@@ -336,20 +276,28 @@ spawnRuneSparkle("⚽"); // You can also try "🎉", "🪄", etc.
           document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
         });
     }
-function typeCommentary(text) {
-  const box = document.getElementById("commentaryBox");
-  box.textContent = ""; // more reliable than innerText
-  box.style.whiteSpace = "pre-line"; // preserves spaces and line breaks
-  let i = 0;
-  const timer = setInterval(() => {
-    box.textContent += text.charAt(i);
-    i++;
-    if (i === text.length) clearInterval(timer);
-  }, 25);
-}
 
+    function typeCommentary(text) {
+      const box = document.getElementById("commentaryBox");
+      box.textContent = "";
+      box.style.whiteSpace = "pre-line";
+      let i = 0;
+      const timer = setInterval(() => {
+        box.textContent += text.charAt(i);
+        i++;
+        if (i === text.length) clearInterval(timer);
+      }, 25);
+    }
+
+    function spawnRuneSparkle(char) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "runeSparkle";
+      sparkle.textContent = char;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 1200);
+    }
   });
 </script>
-
 </body>
 </html>
+
