@@ -16,6 +16,15 @@
     #team1Name { color: #d4af37; font-weight: bold; }
     #team2Name { color: #90ee90; font-weight: bold; }
 
+    
+<svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
+  <rect id="zoneLeft" x="0" y="0" width="106" height="100" fill="#2c2c2c" />
+  <rect id="zoneCenter" x="106" y="0" width="106" height="100" fill="#2c2c2c" />
+  <rect id="zoneRight" x="212" y="0" width="108" height="100" fill="#2c2c2c" />
+</svg>
+
+
+    
     #scoreboard {
       border: 2px solid #ccc;
       padding: 10px;
@@ -149,6 +158,10 @@ function spawnRuneSparkle(char) {
   setTimeout(() => sparkle.remove(), 1200);
 }
 
+    #tacticalMap rect {
+  transition: fill 0.4s ease;
+}
+
     
   </style>
 </head>
@@ -221,6 +234,19 @@ function spawnRuneSparkle(char) {
 
 document.getElementById("passageCounter").innerText = `Passages Played: ${passageData.passagesPlayed}`;
 
+const zoneLeft = document.getElementById("zoneLeft");
+const zoneCenter = document.getElementById("zoneCenter");
+const zoneRight = document.getElementById("zoneRight");
+
+// Reset zones
+zoneLeft.setAttribute("fill", "#2c2c2c");
+zoneCenter.setAttribute("fill", "#2c2c2c");
+zoneRight.setAttribute("fill", "#2c2c2c");
+
+// Highlight based on possession
+const possessionColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
+zoneCenter.setAttribute("fill", possessionColor); // You can randomize zone later
+
           
           const scoreboard = document.getElementById("scoreboard");
           // if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
@@ -232,7 +258,8 @@ if (passageData.passageOfPlay.includes("GOAL")) {
 
 scoreboard.classList.add("flash");
 setTimeout(() => scoreboard.classList.remove("flash"), 800);
-spawnRuneSparkle("⚽"); // Goal-specific sparkle emoji
+spawnRuneSparkle("⚽"); // You can also try "🎉", "🪄", etc.
+
 
 
   
