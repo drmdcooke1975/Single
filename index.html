@@ -75,6 +75,32 @@
     }
 
     #loadingOverlay div { text-align: center; }
+
+  
+
+    @keyframes goalFlash {
+  0%   { background-color: #2c2c2c; }
+  50%  { background-color: gold; }
+  100% { background-color: #2c2c2c; }
+}
+
+@keyframes tacticPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Apply animation classes dynamically from JS */
+
+.flash {
+  animation: goalFlash 0.8s ease;
+}
+
+.pulse {
+  animation: tacticPulse 0.5s ease;
+}
+
+    
   </style>
 </head>
 <body>
@@ -112,96 +138,111 @@
     </div>
   </div>
 
-  <script>
+ <script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbz5MdJYwHekkwAYZ2vI5JNX6sWbrhZ-BdI-2zjHn6yfP01ycJWkapOHeoT3ITPbVojrDg/exec";
 
-        const scriptURL = "https://script.google.com/macros/s/AKfycbz5MdJYwHekkwAYZ2vI5JNX6sWbrhZ-BdI-2zjHn6yfP01ycJWkapOHeoT3ITPbVojrDg/exec";
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("startGameButton").addEventListener("click", playPassage);
+    document.getElementById("resetGameButton").addEventListener("click", resetGame);
 
-    document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("startGameButton").addEventListener("click", playPassage);
-      document.getElementById("resetGameButton").addEventListener("click", resetGame);
+    function playPassage() {
+      document.getElementById("loadingOverlay").style.display = "flex";
 
-      function playPassage() {
-        document.getElementById("loadingOverlay").style.display = "flex";
+      const tactic = document.getElementById("team1Tactic").value;
+      const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
+      document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
-        const tactic = document.getElementById("team1Tactic").value;
-        const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
-        document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("loadingOverlay").style.display = "none";
+          const passageData = data.passageData || {};
 
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            const passageData = data.passageData || {};
+          document.getElementById("team1Score").innerText = passageData.team1Score || "0";
+          document.getElementById("team2Score").innerText = passageData.team2Score || "0";
+          document.getElementById("gameStatus").innerText = "Game Started!";
+          document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
+          document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
-            document.getElementById("team1Score").innerText = passageData.team1Score || "0";
-            document.getElementById("team2Score").innerText = passageData.team2Score || "0";
-            document.getElementById("gameStatus").innerText = "Game Started!";
-            document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
-            document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
+          const scoreboard = document.getElementById("scoreboard");
+          if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
+            scoreboard.classList.add("flash");
+            setTimeout(() => scoreboard.classList.remove("flash"), 800);
+          }
 
-            if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
-              const scoreboard = document.getElementById("scoreboard");
-              scoreboard.style.backgroundColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
-              setTimeout(() => scoreboard.style.backgroundColor = "#2c2c2c", 800);
-            }
+          const tacticDropdown = document.getElementById("team1Tactic");
+          tacticDropdown.classList.add("pulse");
+          setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
 
-            let commentary = "";
-            if (passageData.passageOfPlay.includes("GOAL")) {
-              commentary = passageData.possessionWinner === "Team 1"
-                ? "A mighty blow lands from beneath the mountain halls!"
-                : "Swift as starlight, the Elves strike true!";
-            } else {
-              commentary = passageData.possessionWinner === "Team 1"
-                ? "Axes gleam as Khazad-dûm holds the line."
-                : "Leaves whisper as Lothlórien secures control.";
-            }
-            document.getElementById("commentaryBox").innerText = commentary;
+          let commentary = "";
+          if (passageData.passageOfPlay.includes("GOAL")) {
+            commentary = passageData.possessionWinner === "Team 1"
+              ? "A mighty blow lands from beneath the mountain halls!"
+              : "Swift as starlight, the Elves strike true!";
+          } else {
+            commentary = passageData.possessionWinner === "Team 1"
+              ? "Axes gleam as Khazad-dûm holds the line."
+              : "Leaves whisper as Lothlórien secures control.";
+          }
+          typeCommentary(commentary);
 
-            let logOutput = "[LOGS]\n";
-            logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
-            logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
-            logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
-            logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
-            logOutput += `Score: ${passageData.team1Score} - ${passageData.team2Score}\n\n`;
+          let logOutput = "[LOGS]\n";
+          logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
+          logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
+          logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
+          logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
+          logOutput += `Score: ${passageData.team1Score} - ${passageData.team2Score}\n\n`;
 
-            if (Array.isArray(passageData.debugLogs)) {
-              logOutput += passageData.debugLogs.join("\n");
-            }
-            document.getElementById("debugLogs").innerText = logOutput;
-          })
-          .catch(error => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-          });
-      }
+          if (Array.isArray(passageData.debugLogs)) {
+            logOutput += passageData.debugLogs.join("\n");
+          }
+          document.getElementById("debugLogs").innerText = logOutput;
+        })
+        .catch(error => {
+          document.getElementById("loadingOverlay").style.display = "none";
+          document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+        });
+    }
 
-      function resetGame() {
-        document.getElementById("loadingOverlay").style.display = "flex";
-        const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
-        document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
+    function resetGame() {
+      document.getElementById("loadingOverlay").style.display = "flex";
+      const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
+      document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            document.getElementById("gameStatus").innerText = "Game Reset.";
-            document.getElementById("passage").innerText = "";
-            document.getElementById("matchScore").innerText = "";
-            document.getElementById("team1Score").innerText = "0";
-            document.getElementById("team2Score").innerText = "0";
-            document.getElementById("commentaryBox").innerText = "Let the clash begin under ancient skies…";
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("loadingOverlay").style.display = "none";
+          document.getElementById("gameStatus").innerText = "Game Reset.";
+          document.getElementById("passage").innerText = "";
+          document.getElementById("matchScore").innerText = "";
+          document.getElementById("team1Score").innerText = "0";
+          document.getElementById("team2Score").innerText = "0";
+          typeCommentary("Let the clash begin under ancient skies…");
 
-            const logs = Array.isArray(data.debugLogs)
-              ? data.debugLogs.join("\n")
-              : data.debugLogs || "Reset complete.";
-            document.getElementById("debugLogs").innerText = logs;
-          })
-          .catch(error => {
-            document.getElementById("loadingOverlay").style.display = "none";
-            document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-          });
-      }
-    });
-  </script>
+          const logs = Array.isArray(data.debugLogs)
+            ? data.debugLogs.join("\n")
+            : data.debugLogs || "Reset complete.";
+          document.getElementById("debugLogs").innerText = logs;
+        })
+        .catch(error => {
+          document.getElementById("loadingOverlay").style.display = "none";
+          document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+        });
+    }
+
+    function typeCommentary(text) {
+      const box = document.getElementById("commentaryBox");
+      box.innerText = "";
+      let i = 0;
+      const timer = setInterval(() => {
+        box.innerText += text.charAt(i);
+        i++;
+        if (i === text.length) clearInterval(timer);
+      }, 25);
+    }
+  });
+</script>
+
 </body>
 </html>
