@@ -165,11 +165,14 @@ function spawnRuneSparkle(char) {
 
   <label for="team1Tactic">Dwarven Tactical Choice:</label>
   <br />
-  <select id="team1Tactic">
-    <option value="Attack">Attack</option>
-    <option value="Hold" selected>Hold</option>
-    <option value="Defend">Defend</option>
-  </select>
+
+  
+<select id="team1Tactic">
+  <option value="Attack" title="Charge forth with fury">Attack</option>
+  <option value="Hold" title="Brace against the storm" selected>Hold</option>
+  <option value="Defend" title="Guard the ancient walls">Defend</option>
+</select>
+
 
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
   <p id="passage">Loading passage...</p>
@@ -177,6 +180,9 @@ function spawnRuneSparkle(char) {
   <p id="debugLogs">Debug Logs: Awaiting response...</p>
   <p id="gameStatus">Awaiting game start...</p>
 
+<p id="passageCounter">Passages Played: 0</p>
+ 
+  
   <button id="startGameButton">Start Game Passage</button>
   <button id="resetGameButton">Reset Game</button>
 
@@ -213,15 +219,23 @@ function spawnRuneSparkle(char) {
           document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
           document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
 
+document.getElementById("passageCounter").innerText = `Passages Played: ${passageData.passagesPlayed}`;
+
+          
           const scoreboard = document.getElementById("scoreboard");
           // if (passageData.passageOfPlay && passageData.passageOfPlay.includes("GOAL")) {
            // scoreboard.classList.add("flash");
            // setTimeout(() => scoreboard.classList.remove("flash"), 800);
           // }
 if (passageData.passageOfPlay.includes("GOAL")) {
-  scoreboard.classList.add("flash");
-  setTimeout(() => scoreboard.classList.remove("flash"), 800);
-  spawnRuneSparkle("✨");
+ 
+
+scoreboard.classList.add("flash");
+setTimeout(() => scoreboard.classList.remove("flash"), 800);
+spawnRuneSparkle("⚽"); // Goal-specific sparkle emoji
+
+
+  
 }
 
 
@@ -243,6 +257,10 @@ if (passageData.passageOfPlay.includes("GOAL")) {
               ? "Axes gleam as Khazad-dûm holds the line."
               : "Leaves whisper as Lothlórien secures control.";
           }
+          if (passageData.passagesPlayed > 7) {
+  commentary += " The tension thickens in the final passages...";
+}
+
           typeCommentary(commentary);
 
 
