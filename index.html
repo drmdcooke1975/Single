@@ -100,6 +100,53 @@
   animation: tacticPulse 0.5s ease;
 }
 
+
+    @keyframes goalFlash {
+  0%   { background-color: #2c2c2c; }
+  50%  { background-color: gold; }
+  100% { background-color: #2c2c2c; }
+}
+
+@keyframes tacticPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes runeDrift {
+  0%   { opacity: 0; transform: translateY(10px); }
+  50%  { opacity: 0.6; transform: translateY(-5px); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.flash {
+  animation: goalFlash 0.8s ease;
+}
+
+.pulse {
+  animation: tacticPulse 0.5s ease;
+}
+
+.runeSparkle {
+  animation: runeDrift 1.2s ease-in-out;
+  position: absolute;
+  font-size: 20px;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  color: gold;
+  pointer-events: none;
+  z-index: 10;
+}
+    
+function spawnRuneSparkle(char) {
+  const sparkle = document.createElement("div");
+  sparkle.className = "runeSparkle";
+  sparkle.textContent = char;
+  document.body.appendChild(sparkle);
+  setTimeout(() => sparkle.remove(), 1200);
+}
+
     
   </style>
 </head>
@@ -170,6 +217,16 @@
             setTimeout(() => scoreboard.classList.remove("flash"), 800);
           }
 
+
+if (passageData.passageOfPlay.includes("GOAL")) {
+  scoreboard.classList.add("flash");
+  setTimeout(() => scoreboard.classList.remove("flash"), 800);
+  spawnRuneSparkle("✨");
+}
+
+
+
+          
           const tacticDropdown = document.getElementById("team1Tactic");
           tacticDropdown.classList.add("pulse");
           setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
