@@ -170,8 +170,6 @@
 </body>
 
 
-
-
 <script>
   const scriptURL = "https://script.google.com/macros/s/AKfycbx8gyAAKWcnZjSx2JkI_YwMNROzgjAz7YJTijswbkWW-7u06vTAoCrzK15siG6Rk1liqA/exec";
 
@@ -185,7 +183,8 @@
   let passageCount = 0;
   const MAX_PASSAGES = 30;
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", () => {
+    // Attach listeners
     document.getElementById("startGameButton").addEventListener("click", startNewMatch);
     document.getElementById("continueMatchButton").addEventListener("click", playPassage);
     document.getElementById("resetGameButton").addEventListener("click", resetMatch);
@@ -198,8 +197,8 @@
       document.getElementById("matchScore").innerText = "0 - 0";
       document.getElementById("team1Score").innerText = "0";
       document.getElementById("team2Score").innerText = "0";
-      typeCommentary("Let the clash begin!");
       document.getElementById("continueMatchButton").disabled = false;
+      typeCommentary("Let the clash begin!");
     }
 
     function playPassage() {
@@ -214,7 +213,9 @@
         return;
       }
 
-      document.getElementById("loadingOverlay").style.display = "flex";
+      // Show overlay
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
       const url = `${scriptURL}?action=passage&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
@@ -223,10 +224,10 @@
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          document.getElementById("loadingOverlay").style.display = "none";
+          if (overlay) overlay.style.display = "none";
 
           const passageData = data.passageData || {};
-          passageCount = passageData.passagesPlayed || passageCount + 1;
+          passageCount = passageData.passagesPlayed || (passageCount + 1);
 
           document.getElementById("team1Score").innerText = passageData.team1Score || "0";
           document.getElementById("team2Score").innerText = passageData.team2Score || "0";
@@ -235,39 +236,35 @@
           document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
           document.getElementById("passageCounter").innerText = `Passages Played: ${passageCount}`;
 
-          // Tactical Map (example pulse)
-          const tacticDropdown = document.getElementById("team1Tactic");
-          tacticDropdown.classList.add("pulse");
-          setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
+          typeCommentary(
+            passageData.passageOfPlay.includes("GOAL")
+              ? "Glory falls upon the field!"
+              : passageData.possessionWinner === "Team 1"
+              ? "The dwarves drive forward!"
+              : "The elves shimmer through the midfield."
+          );
 
-          // Commentary
-          typeCommentary(passageData.passageOfPlay.includes("GOAL") 
-            ? "Glory falls upon the field!" 
-            : passageData.possessionWinner === "Team 1"
-              ? "The dwarves drive forward!" 
-              : "The elves shimmer through the midfield.");
-
-          // Visual Effects (e.g. Goal Sparkle)
           if (passageData.passageOfPlay.includes("GOAL")) {
             const scoreboard = document.getElementById("scoreboard");
-            scoreboard.classList.add("flash");
-            setTimeout(() => scoreboard.classList.remove("flash"), 800);
+            if (scoreboard) {
+              scoreboard.classList.add("flash");
+              setTimeout(() => scoreboard.classList.remove("flash"), 800);
+            }
             spawnRuneSparkle("⚽");
           }
 
-          // Match complete logic
           if (passageData.gameComplete) {
             typeCommentary("Match complete. Final score: " + passageData.matchScore);
             document.getElementById("continueMatchButton").disabled = true;
           }
 
-          // Debug output
-          let logOutput = "[LOG]\n";
-          logOutput += `Session: ${sessionID}\nPlayer: ${playerID}\nMatch #: ${passageData.matchNumber}\nPassage #: ${passageCount}\n${passageData.debugLogs?.join("\n") || ""}`;
+          const logOutput =
+            `[LOG]\nSession: ${sessionID}\nPlayer: ${playerID}\nMatch #: ${passageData.matchNumber}\nPassage #: ${passageCount}\n` +
+            `${(passageData.debugLogs || []).join("\n")}`;
           document.getElementById("debugLogs").innerText = logOutput;
         })
         .catch(error => {
-          document.getElementById("loadingOverlay").style.display = "none";
+          if (overlay) overlay.style.display = "none";
           document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
         });
     }
@@ -278,7 +275,8 @@
         return;
       }
 
-      document.getElementById("loadingOverlay").style.display = "flex";
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
       const url = `${scriptURL}?action=resetGameData&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
@@ -287,20 +285,20 @@
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          document.getElementById("loadingOverlay").style.display = "none";
+          if (overlay) overlay.style.display = "none";
+
           document.getElementById("gameStatus").innerText = "Match Reset.";
           document.getElementById("passage").innerText = "";
           document.getElementById("matchScore").innerText = "0 - 0";
           document.getElementById("team1Score").innerText = "0";
           document.getElementById("team2Score").innerText = "0";
           passageCount = 0;
-          typeCommentary("New match initialized!");
           document.getElementById("continueMatchButton").disabled = false;
-
-          document.getElementById("debugLogs").innerText = data.debugLogs?.join("\n") || "Match reset complete.";
+          typeCommentary("New match initialized!");
+          document.getElementById("debugLogs").innerText = (data.debugLogs || []).join("\n");
         })
         .catch(error => {
-          document.getElementById("loadingOverlay").style.display = "none";
+          if (overlay) overlay.style.display = "none";
           document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
         });
     }
@@ -311,8 +309,7 @@
       box.style.whiteSpace = "pre-line";
       let i = 0;
       const timer = setInterval(() => {
-        box.textContent += text.charAt(i);
-        i++;
+        box.textContent += text.charAt(i++);
         if (i >= text.length) clearInterval(timer);
       }, 25);
     }
@@ -326,6 +323,7 @@
     }
   });
 </script>
+
 
 
 
