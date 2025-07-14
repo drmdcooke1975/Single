@@ -1,3 +1,8 @@
+// Middle-Earth Match Simulator [HEAD]
+// Section: Styling & Classes
+// Version: 1.2.0
+// Updated: 15 July 2025, 10:43 BST
+
 <head>
   <meta charset="UTF-8" />
   <title>Middle-Earth Match Simulator</title>
@@ -26,19 +31,8 @@
       align-items: center;
     }
 
-    #passage {
-      font-size: 20px;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-    #commentaryBox {
-      font-style: italic;
-      color: #ccc;
-      margin-top: 15px;
-      font-size: 18px;
-      white-space: pre-line;
-    }
+    #passage { font-size: 20px; font-style: italic; margin-top: 20px; }
+    #commentaryBox { font-style: italic; color: #ccc; margin-top: 15px; font-size: 18px; white-space: pre-line; }
 
     button {
       margin: 10px;
@@ -81,20 +75,20 @@
 
     /* 🪄 Animations */
     @keyframes goalFlash {
-      0%   { background-color: #2c2c2c; }
-      50%  { background-color: gold; }
+      0% { background-color: #2c2c2c; }
+      50% { background-color: gold; }
       100% { background-color: #2c2c2c; }
     }
 
     @keyframes tacticPulse {
-      0%   { transform: scale(1); }
-      50%  { transform: scale(1.2); }
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
       100% { transform: scale(1); }
     }
 
     @keyframes runeDrift {
-      0%   { opacity: 0; transform: translateY(10px); }
-      50%  { opacity: 0.6; transform: translateY(-5px); }
+      0% { opacity: 0; transform: translateY(10px); }
+      50% { opacity: 0.6; transform: translateY(-5px); }
       100% { opacity: 0; transform: translateY(-20px); }
     }
 
@@ -122,9 +116,17 @@
     .holdZone   { fill: #f0e68c !important; }
     .defendZone { fill: #3399ff !important; }
     .resetZone  { fill: #2c2c2c !important; }
+    .possessionTeam1 { fill: #b22222 !important; }
+    .possessionTeam2 { fill: #228b22 !important; }
   </style>
 </head>
 
+
+
+// Middle-Earth Match Simulator [BODY]
+// Section: Interface & Tactical Map
+// Version: 1.2.0
+// Updated: 15 July 2025, 10:43 BST
 
 <body>
   <h1>Middle-Earth Match Simulator</h1>
@@ -186,6 +188,11 @@
   </div>
 </body>
 
+// Middle-Earth Match Simulator [SCRIPT] — Part 1
+// Section: Match Setup, Pre-Tactic & Reset Logic
+// Version: 1.2.0
+// Updated: 15 July 2025, 10:43 BST
+
 <script>
   const scriptURL = "https://script.google.com/macros/s/AKfycbx8gyAAKWcnZjSx2JkI_YwMNROzgjAz7YJTijswbkWW-7u06vTAoCrzK15siG6Rk1liqA/exec";
 
@@ -203,6 +210,7 @@
     document.getElementById("startGameButton").addEventListener("click", startNewMatch);
     document.getElementById("continueMatchButton").addEventListener("click", playPassage);
     document.getElementById("resetGameButton").addEventListener("click", resetMatch);
+    document.getElementById("team1Tactic").addEventListener("change", previewTacticZone);
 
     function startNewMatch() {
       sessionID = `${playerID}_match_${Date.now()}`;
@@ -215,6 +223,69 @@
       document.getElementById("continueMatchButton").disabled = false;
       typeCommentary("Let the clash begin!");
     }
+
+    function previewTacticZone() {
+      const tactic = document.getElementById("team1Tactic").value;
+      const zoneLeft = document.getElementById("zoneLeft");
+      const zoneCenter = document.getElementById("zoneCenter");
+      const zoneRight = document.getElementById("zoneRight");
+
+      zoneLeft.setAttribute("class", "resetZone");
+      zoneCenter.setAttribute("class", "resetZone");
+      zoneRight.setAttribute("class", "resetZone");
+
+      if (tactic === "Attack") {
+        zoneRight.setAttribute("class", "attackZone");
+      } else if (tactic === "Hold") {
+        zoneCenter.setAttribute("class", "holdZone");
+      } else if (tactic === "Defend") {
+        zoneLeft.setAttribute("class", "defendZone");
+      }
+
+      const dropdown = document.getElementById("team1Tactic");
+      dropdown.classList.add("tacticSelected");
+      setTimeout(() => dropdown.classList.remove("tacticSelected"), 600);
+    }
+
+    function resetMatch() {
+      if (!sessionID) {
+        alert("No active match to reset.");
+        return;
+      }
+
+      const overlay = document.getElementById("loadingOverlay");
+      if (overlay) overlay.style.display = "flex";
+
+      const tactic = document.getElementById("team1Tactic").value;
+      const url = `${scriptURL}?action=resetGameData&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
+      document.getElementById("debugLogs").innerText = "[RESET] Initializing new match...";
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (overlay) overlay.style.display = "none";
+
+          document.getElementById("gameStatus").innerText = "Match Reset.";
+          document.getElementById("passage").innerText = "";
+          document.getElementById("matchScore").innerText = "0 - 0";
+          document.getElementById("team1Score").innerText = "0";
+          document.getElementById("team2Score").innerText = "0";
+          passageCount = 0;
+          document.getElementById("continueMatchButton").disabled = false;
+          typeCommentary("New match initialized!");
+          document.getElementById("debugLogs").innerText = (data.debugLogs || []).join("\n");
+
+          previewTacticZone(); // Refresh zone display with current tactic
+        })
+        .catch(error => {
+          if (overlay) overlay.style.display = "none";
+          document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
+        });
+    }
+// Middle-Earth Match Simulator [SCRIPT] — Part 2
+// Section: Passage Logic & Commentary Effects
+// Version: 1.2.0
+// Updated: 15 July 2025, 10:43 BST
 
     function playPassage() {
       if (!sessionID) {
@@ -232,38 +303,6 @@
       if (overlay) overlay.style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
-
-      // 🎯 Tactical Map Fill Update
-      const zoneLeft = document.getElementById("zoneLeft");
-      const zoneCenter = document.getElementById("zoneCenter");
-      const zoneRight = document.getElementById("zoneRight");
-
-      zoneLeft.className = "resetZone";
-      zoneCenter.className = "resetZone";
-      zoneRight.className = "resetZone";
-
-      if (tactic === "Attack") {
-        zoneRight.classList.add("attackZone");
-      } else if (tactic === "Hold") {
-        zoneCenter.classList.add("holdZone");
-      } else if (tactic === "Defend") {
-        zoneLeft.classList.add("defendZone");
-      }
-
-      const pulseZone = {
-        Attack: zoneRight,
-        Hold: zoneCenter,
-        Defend: zoneLeft
-      }[tactic];
-      if (pulseZone) {
-        pulseZone.classList.add("pulse");
-        setTimeout(() => pulseZone.classList.remove("pulse"), 600);
-      }
-
-      const tacticDropdown = document.getElementById("team1Tactic");
-      tacticDropdown.classList.add("tacticSelected");
-      setTimeout(() => tacticDropdown.classList.remove("tacticSelected"), 600);
-
       const url = `${scriptURL}?action=passage&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
       document.getElementById("debugLogs").innerText = "[PLAY PASSAGE] Fetching...";
 
@@ -299,6 +338,27 @@
             spawnRuneSparkle("⚽");
           }
 
+          // Phase 2 — Tactical Map Outcome Update
+          const zoneLeft = document.getElementById("zoneLeft");
+          const zoneCenter = document.getElementById("zoneCenter");
+          const zoneRight = document.getElementById("zoneRight");
+
+          zoneLeft.setAttribute("class", "resetZone");
+          zoneCenter.setAttribute("class", "resetZone");
+          zoneRight.setAttribute("class", "resetZone");
+
+          const possessionZone = {
+            Attack: zoneRight,
+            Hold: zoneCenter,
+            Defend: zoneLeft
+          }[tactic];
+
+          if (passageData.possessionWinner === "Team 1") {
+            possessionZone?.setAttribute("class", "possessionTeam1");
+          } else if (passageData.possessionWinner === "Team 2") {
+            possessionZone?.setAttribute("class", "possessionTeam2");
+          }
+
           if (passageData.gameComplete) {
             typeCommentary("Match complete. Final score: " + passageData.matchScore);
             document.getElementById("continueMatchButton").disabled = true;
@@ -308,40 +368,6 @@
             `[LOG]\nSession: ${sessionID}\nPlayer: ${playerID}\nMatch #: ${passageData.matchNumber}\nPassage #: ${passageCount}\n` +
             `${(passageData.debugLogs || []).join("\n")}`;
           document.getElementById("debugLogs").innerText = logOutput;
-        })
-        .catch(error => {
-          if (overlay) overlay.style.display = "none";
-          document.getElementById("debugLogs").innerText = `Error: ${error.message}`;
-        });
-    }
-
-    function resetMatch() {
-      if (!sessionID) {
-        alert("No active match to reset.");
-        return;
-      }
-
-      const overlay = document.getElementById("loadingOverlay");
-      if (overlay) overlay.style.display = "flex";
-
-      const tactic = document.getElementById("team1Tactic").value;
-      const url = `${scriptURL}?action=resetGameData&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
-      document.getElementById("debugLogs").innerText = "[RESET] Initializing new match...";
-
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          if (overlay) overlay.style.display = "none";
-
-          document.getElementById("gameStatus").innerText = "Match Reset.";
-          document.getElementById("passage").innerText = "";
-          document.getElementById("matchScore").innerText = "0 - 0";
-          document.getElementById("team1Score").innerText = "0";
-          document.getElementById("team2Score").innerText = "0";
-          passageCount = 0;
-          document.getElementById("continueMatchButton").disabled = false;
-          typeCommentary("New match initialized!");
-          document.getElementById("debugLogs").innerText = (data.debugLogs || []).join("\n");
         })
         .catch(error => {
           if (overlay) overlay.style.display = "none";
