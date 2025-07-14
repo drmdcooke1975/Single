@@ -1,12 +1,18 @@
-// Middle-Earth Match Simulator [HEAD]
-// Section: Styling & Classes
-// Version: 1.2.0
-// Updated: 15 July 2025, 10:43 BST
+<!-- Middle-Earth Match Simulator [HEAD]
+     Section: Styling & Classes
+     Version: 1.2.0
+     Updated: 15 July 2025, 10:43 BST -->
 
 <head>
   <meta charset="UTF-8" />
   <title>Middle-Earth Match Simulator</title>
   <style>
+
+    /* Styling rules here — unchanged from previous delivery */
+    /* Includes zone classes: .attackZone, .holdZone, .defendZone, .possessionTeam1, .possessionTeam2 */
+    /* Includes animations, fonts, layout, and component styles */
+
+    
     body {
       background-color: #1c1c1c;
       color: #f0f0f0;
@@ -122,13 +128,17 @@
 </head>
 
 
-
-// Middle-Earth Match Simulator [BODY]
-// Section: Interface & Tactical Map
-// Version: 1.2.0
-// Updated: 15 July 2025, 10:43 BST
+<!-- Middle-Earth Match Simulator [BODY]
+     Section: Interface & Tactical Map
+     Version: 1.2.0
+     Updated: 15 July 2025, 10:43 BST -->
 
 <body>
+
+  <!-- Scoreboard, dropdown, commentary, tactical map, controls, and overlay -->
+  <!-- Includes: <select id="team1Tactic">, <svg id="tacticalMap">, and loadingOverlay -->
+
+  
   <h1>Middle-Earth Match Simulator</h1>
 
   <!-- Scoreboard -->
@@ -188,12 +198,23 @@
   </div>
 </body>
 
-// Middle-Earth Match Simulator [SCRIPT] — Part 1
-// Section: Match Setup, Pre-Tactic & Reset Logic
-// Version: 1.2.0
-// Updated: 15 July 2025, 10:43 BST
+<!-- Middle-Earth Match Simulator [SCRIPT] — Part 1
+     Section: Match Setup, Pre-Tactic & Reset Logic
+     Version: 1.2.0
+     Updated: 15 July 2025, 10:43 BST -->
+
+<!-- Middle-Earth Match Simulator [SCRIPT] — Part 2
+     Section: Passage Logic & Commentary Effects
+     Version: 1.2.0
+     Updated: 15 July 2025, 10:43 BST -->
 
 <script>
+
+  
+  // Contains: playerID setup, event listeners, startNewMatch(), previewTacticZone(), and resetMatch()
+
+  // Contains: playPassage(), typeCommentary(), spawnRuneSparkle()
+  
   const scriptURL = "https://script.google.com/macros/s/AKfycbx8gyAAKWcnZjSx2JkI_YwMNROzgjAz7YJTijswbkWW-7u06vTAoCrzK15siG6Rk1liqA/exec";
 
   let playerID = localStorage.getItem("playerID");
