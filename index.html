@@ -116,10 +116,10 @@
   </style>
 </head>
 
-
 <body>
   <h1>Middle-Earth Match Simulator</h1>
 
+  <!-- Scoreboard -->
   <div id="scoreboard">
     <span id="team1Name" style="margin-right: 15px;">🛡️ Dwarves of Khazad-dûm</span>
     <strong id="team1Score">0</strong>
@@ -128,14 +128,15 @@
     <span id="team2Name" style="margin-left: 15px;">🌿 Elves of Lothlórien</span>
   </div>
 
-  <label for="team1Tactic">Dwarven Tactical Choice:</label>
-  <br />
+  <!-- Tactical Input -->
+  <label for="team1Tactic">Dwarven Tactical Choice:</label><br />
   <select id="team1Tactic">
     <option value="Attack" title="Charge forth with fury">Attack</option>
     <option value="Hold" title="Brace against the storm" selected>Hold</option>
     <option value="Defend" title="Guard the ancient walls">Defend</option>
   </select>
 
+  <!-- Dynamic Commentary -->
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
   <p id="passage">Loading passage...</p>
   <p id="matchScore">Loading score...</p>
@@ -143,16 +144,24 @@
   <p id="gameStatus">Awaiting game start...</p>
   <p id="passageCounter">Passages Played: 0</p>
 
+  <!-- Tactical Map -->
   <svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
     <rect id="zoneLeft" x="0" y="0" width="106" height="100" fill="#2c2c2c" />
     <rect id="zoneCenter" x="106" y="0" width="106" height="100" fill="#2c2c2c" />
     <rect id="zoneRight" x="212" y="0" width="108" height="100" fill="#2c2c2c" />
   </svg>
 
-  <button id="startGameButton">Start Game Passage</button>
-  <button id="resetGameButton">Reset Game</button>
+  <!-- Match Controls -->
+  <div id="controls" style="margin-top: 20px;">
+    <button id="startGameButton">Start New Match</button>
+    <button id="continueMatchButton" disabled>Play Passage</button>
+    <button id="resetGameButton">Reset Match</button>
+  </div>
 
-  <div id="loadingOverlay">
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.8); color: #fff; font-size: 20px;
+    display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div>
       🧙‍♂️ Preparing passage...<br />
       <span style="font-size: 16px;">The winds of fate are shifting…</span>
@@ -160,49 +169,85 @@
   </div>
 </body>
 
+
+
+
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbyLTtaoGJ6zrtiBOO4zyOgUDK4pey2kY3ARp5tG03UVjATwU4FTJoyU2HnzX_Pll2XIwg/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbx8gyAAKWcnZjSx2JkI_YwMNROzgjAz7YJTijswbkWW-7u06vTAoCrzK15siG6Rk1liqA/exec";
+
+  let playerID = localStorage.getItem("playerID");
+  if (!playerID) {
+    playerID = "player_" + Math.floor(Math.random() * 100000);
+    localStorage.setItem("playerID", playerID);
+  }
+
+  let sessionID = null;
+  let passageCount = 0;
+  const MAX_PASSAGES = 30;
 
   document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("startGameButton").addEventListener("click", playPassage);
-    document.getElementById("resetGameButton").addEventListener("click", resetGame);
+    document.getElementById("startGameButton").addEventListener("click", startNewMatch);
+    document.getElementById("continueMatchButton").addEventListener("click", playPassage);
+    document.getElementById("resetGameButton").addEventListener("click", resetMatch);
+
+    function startNewMatch() {
+      sessionID = `${playerID}_match_${Date.now()}`;
+      passageCount = 0;
+      document.getElementById("gameStatus").innerText = "New match started.";
+      document.getElementById("passage").innerText = "";
+      document.getElementById("matchScore").innerText = "0 - 0";
+      document.getElementById("team1Score").innerText = "0";
+      document.getElementById("team2Score").innerText = "0";
+      typeCommentary("Let the clash begin!");
+      document.getElementById("continueMatchButton").disabled = false;
+    }
 
     function playPassage() {
+      if (!sessionID) {
+        alert("Start a match first.");
+        return;
+      }
+      if (passageCount >= MAX_PASSAGES) {
+        typeCommentary("Match complete. Final score locked.");
+        document.getElementById("gameStatus").innerText = "Game Over.";
+        document.getElementById("continueMatchButton").disabled = true;
+        return;
+      }
+
       document.getElementById("loadingOverlay").style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
-      const sessionID = "player_" + Math.floor(Math.random() * 100000); // Simple session generator
-
-      const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&sessionID=${sessionID}&t=${Date.now()}`;
-      document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
+      const url = `${scriptURL}?action=passage&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
+      document.getElementById("debugLogs").innerText = "[PLAY PASSAGE] Fetching...";
 
       fetch(url)
         .then(response => response.json())
         .then(data => {
           document.getElementById("loadingOverlay").style.display = "none";
-          const passageData = data.passageData || {};
 
-          // Match UI updates
+          const passageData = data.passageData || {};
+          passageCount = passageData.passagesPlayed || passageCount + 1;
+
           document.getElementById("team1Score").innerText = passageData.team1Score || "0";
           document.getElementById("team2Score").innerText = passageData.team2Score || "0";
-          document.getElementById("gameStatus").innerText = "Game Started!";
+          document.getElementById("gameStatus").innerText = passageData.gameComplete ? "Game Complete!" : "Game Ongoing";
           document.getElementById("passage").innerText = passageData.passageOfPlay || "No passage returned.";
           document.getElementById("matchScore").innerText = passageData.matchScore || "Score unavailable.";
-          document.getElementById("passageCounter").innerText = `Passages Played: ${passageData.passagesPlayed}`;
+          document.getElementById("passageCounter").innerText = `Passages Played: ${passageCount}`;
 
-          // Tactical map update
-          const zoneLeft = document.getElementById("zoneLeft");
-          const zoneCenter = document.getElementById("zoneCenter");
-          const zoneRight = document.getElementById("zoneRight");
+          // Tactical Map (example pulse)
+          const tacticDropdown = document.getElementById("team1Tactic");
+          tacticDropdown.classList.add("pulse");
+          setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
 
-          zoneLeft.setAttribute("fill", "#2c2c2c");
-          zoneCenter.setAttribute("fill", "#2c2c2c");
-          zoneRight.setAttribute("fill", "#2c2c2c");
+          // Commentary
+          typeCommentary(passageData.passageOfPlay.includes("GOAL") 
+            ? "Glory falls upon the field!" 
+            : passageData.possessionWinner === "Team 1"
+              ? "The dwarves drive forward!" 
+              : "The elves shimmer through the midfield.");
 
-          const possessionColor = passageData.possessionWinner === "Team 1" ? "#d4af37" : "#90ee90";
-          zoneCenter.setAttribute("fill", possessionColor);
-
-          // Goal effects
+          // Visual Effects (e.g. Goal Sparkle)
           if (passageData.passageOfPlay.includes("GOAL")) {
             const scoreboard = document.getElementById("scoreboard");
             scoreboard.classList.add("flash");
@@ -210,40 +255,15 @@
             spawnRuneSparkle("⚽");
           }
 
-          // Tactic pulse
-          const tacticDropdown = document.getElementById("team1Tactic");
-          tacticDropdown.classList.add("pulse");
-          setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
-
-          // Commentary logic
-          let commentary = "";
-          if (passageData.passageOfPlay.includes("GOAL")) {
-            commentary = passageData.possessionWinner === "Team 1"
-              ? "A mighty blow lands from beneath the mountain halls!"
-              : "Swift as starlight, the Elves strike true!";
-          } else {
-            commentary = passageData.possessionWinner === "Team 1"
-              ? "Axes gleam as Khazad-dûm holds the line."
-              : "Leaves whisper as Lothlórien secures control.";
+          // Match complete logic
+          if (passageData.gameComplete) {
+            typeCommentary("Match complete. Final score: " + passageData.matchScore);
+            document.getElementById("continueMatchButton").disabled = true;
           }
 
-          if (passageData.passagesPlayed > 7) {
-            commentary += " The tension thickens in the final passages...";
-          }
-
-          typeCommentary(commentary);
-
-          // Debug logs
-          let logOutput = "[LOGS]\n";
-          logOutput += `Passage Count: ${passageData.passagesPlayed}\n`;
-          logOutput += `Team 1 Tactic: ${passageData.team1Tactic}\n`;
-          logOutput += `Team 2 Tactic: ${passageData.team2Tactic}\n`;
-          logOutput += `Possession Winner: ${passageData.possessionWinner}\n`;
-          logOutput += `Score: ${passageData.team1Score} - ${passageData.team2Score}\n\n`;
-
-          if (Array.isArray(passageData.debugLogs)) {
-            logOutput += passageData.debugLogs.join("\n");
-          }
+          // Debug output
+          let logOutput = "[LOG]\n";
+          logOutput += `Session: ${sessionID}\nPlayer: ${playerID}\nMatch #: ${passageData.matchNumber}\nPassage #: ${passageCount}\n${passageData.debugLogs?.join("\n") || ""}`;
           document.getElementById("debugLogs").innerText = logOutput;
         })
         .catch(error => {
@@ -252,28 +272,32 @@
         });
     }
 
-    function resetGame() {
+    function resetMatch() {
+      if (!sessionID) {
+        alert("No active match to reset.");
+        return;
+      }
+
       document.getElementById("loadingOverlay").style.display = "flex";
 
-      const sessionID = "player_" + Math.floor(Math.random() * 100000); // Match reset ID
-      const url = `${scriptURL}?action=resetGameData&sessionID=${sessionID}&t=${Date.now()}`;
-      document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
+      const tactic = document.getElementById("team1Tactic").value;
+      const url = `${scriptURL}?action=resetGameData&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
+      document.getElementById("debugLogs").innerText = "[RESET] Initializing new match...";
 
       fetch(url)
         .then(response => response.json())
         .then(data => {
           document.getElementById("loadingOverlay").style.display = "none";
-          document.getElementById("gameStatus").innerText = "Game Reset.";
+          document.getElementById("gameStatus").innerText = "Match Reset.";
           document.getElementById("passage").innerText = "";
-          document.getElementById("matchScore").innerText = "";
+          document.getElementById("matchScore").innerText = "0 - 0";
           document.getElementById("team1Score").innerText = "0";
           document.getElementById("team2Score").innerText = "0";
-          typeCommentary("Let the clash begin under ancient skies…");
+          passageCount = 0;
+          typeCommentary("New match initialized!");
+          document.getElementById("continueMatchButton").disabled = false;
 
-          const logs = Array.isArray(data.debugLogs)
-            ? data.debugLogs.join("\n")
-            : data.debugLogs || "Reset complete.";
-          document.getElementById("debugLogs").innerText = logs;
+          document.getElementById("debugLogs").innerText = data.debugLogs?.join("\n") || "Match reset complete.";
         })
         .catch(error => {
           document.getElementById("loadingOverlay").style.display = "none";
@@ -289,7 +313,7 @@
       const timer = setInterval(() => {
         box.textContent += text.charAt(i);
         i++;
-        if (i === text.length) clearInterval(timer);
+        if (i >= text.length) clearInterval(timer);
       }, 25);
     }
 
@@ -302,6 +326,9 @@
     }
   });
 </script>
+
+
+
 
 </body>
 </html>
