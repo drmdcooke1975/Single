@@ -171,24 +171,18 @@
       document.getElementById("loadingOverlay").style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
-      const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
+      const sessionID = "player_" + Math.floor(Math.random() * 100000); // Simple session generator
+
+      const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&sessionID=${sessionID}&t=${Date.now()}`;
       document.getElementById("debugLogs").innerText = "[START GAME] Fetching passage...";
 
-
-const sessionID = "player_" + Math.floor(Math.random() * 100000); // or set from login later
-const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&sessionID=${sessionID}&t=${Date.now()}`;
-
-
-
-
-      
       fetch(url)
         .then(response => response.json())
         .then(data => {
           document.getElementById("loadingOverlay").style.display = "none";
           const passageData = data.passageData || {};
 
-          // Score + match info
+          // Match UI updates
           document.getElementById("team1Score").innerText = passageData.team1Score || "0";
           document.getElementById("team2Score").innerText = passageData.team2Score || "0";
           document.getElementById("gameStatus").innerText = "Game Started!";
@@ -221,7 +215,7 @@ const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&se
           tacticDropdown.classList.add("pulse");
           setTimeout(() => tacticDropdown.classList.remove("pulse"), 500);
 
-          // Commentary
+          // Commentary logic
           let commentary = "";
           if (passageData.passageOfPlay.includes("GOAL")) {
             commentary = passageData.possessionWinner === "Team 1"
@@ -260,7 +254,9 @@ const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&se
 
     function resetGame() {
       document.getElementById("loadingOverlay").style.display = "flex";
-      const url = `${scriptURL}?action=resetGameData&t=${Date.now()}`;
+
+      const sessionID = "player_" + Math.floor(Math.random() * 100000); // Match reset ID
+      const url = `${scriptURL}?action=resetGameData&sessionID=${sessionID}&t=${Date.now()}`;
       document.getElementById("debugLogs").innerText = "[RESET GAME] Resetting game...";
 
       fetch(url)
@@ -305,12 +301,8 @@ const url = `${scriptURL}?action=passage&tactic=${encodeURIComponent(tactic)}&se
       setTimeout(() => sparkle.remove(), 1200);
     }
   });
-
-
-
-
-  
 </script>
+
 </body>
 </html>
 
