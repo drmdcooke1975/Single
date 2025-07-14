@@ -59,6 +59,11 @@
       margin-top: 10px;
     }
 
+    .tacticSelected {
+      border: 2px solid gold;
+      box-shadow: 0 0 8px gold;
+    }
+
     #loadingOverlay {
       display: none;
       position: fixed;
@@ -112,8 +117,14 @@
     #tacticalMap rect {
       transition: fill 0.4s ease;
     }
+
+    .attackZone { fill: #ff4d4d !important; }
+    .holdZone   { fill: #f0e68c !important; }
+    .defendZone { fill: #3399ff !important; }
+    .resetZone  { fill: #2c2c2c !important; }
   </style>
 </head>
+
 
 <body>
   <h1>Middle-Earth Match Simulator</h1>
@@ -145,9 +156,9 @@
 
   <!-- Tactical Map -->
   <svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
-    <rect id="zoneLeft" x="0" y="0" width="106" height="100" fill="#2c2c2c" />
-    <rect id="zoneCenter" x="106" y="0" width="106" height="100" fill="#2c2c2c" />
-    <rect id="zoneRight" x="212" y="0" width="108" height="100" fill="#2c2c2c" />
+    <rect id="zoneLeft" class="resetZone" x="0" y="0" width="106" height="100" />
+    <rect id="zoneCenter" class="resetZone" x="106" y="0" width="106" height="100" />
+    <rect id="zoneRight" class="resetZone" x="212" y="0" width="108" height="100" />
   </svg>
 
   <!-- Match Controls -->
@@ -175,8 +186,6 @@
   </div>
 </body>
 
-
-
 <script>
   const scriptURL = "https://script.google.com/macros/s/AKfycbx8gyAAKWcnZjSx2JkI_YwMNROzgjAz7YJTijswbkWW-7u06vTAoCrzK15siG6Rk1liqA/exec";
 
@@ -191,7 +200,6 @@
   const MAX_PASSAGES = 30;
 
   document.addEventListener("DOMContentLoaded", () => {
-    // Attach listeners
     document.getElementById("startGameButton").addEventListener("click", startNewMatch);
     document.getElementById("continueMatchButton").addEventListener("click", playPassage);
     document.getElementById("resetGameButton").addEventListener("click", resetMatch);
@@ -220,11 +228,42 @@
         return;
       }
 
-      // Show overlay
       const overlay = document.getElementById("loadingOverlay");
       if (overlay) overlay.style.display = "flex";
 
       const tactic = document.getElementById("team1Tactic").value;
+
+      // 🎯 Tactical Map Fill Update
+      const zoneLeft = document.getElementById("zoneLeft");
+      const zoneCenter = document.getElementById("zoneCenter");
+      const zoneRight = document.getElementById("zoneRight");
+
+      zoneLeft.className = "resetZone";
+      zoneCenter.className = "resetZone";
+      zoneRight.className = "resetZone";
+
+      if (tactic === "Attack") {
+        zoneRight.classList.add("attackZone");
+      } else if (tactic === "Hold") {
+        zoneCenter.classList.add("holdZone");
+      } else if (tactic === "Defend") {
+        zoneLeft.classList.add("defendZone");
+      }
+
+      const pulseZone = {
+        Attack: zoneRight,
+        Hold: zoneCenter,
+        Defend: zoneLeft
+      }[tactic];
+      if (pulseZone) {
+        pulseZone.classList.add("pulse");
+        setTimeout(() => pulseZone.classList.remove("pulse"), 600);
+      }
+
+      const tacticDropdown = document.getElementById("team1Tactic");
+      tacticDropdown.classList.add("tacticSelected");
+      setTimeout(() => tacticDropdown.classList.remove("tacticSelected"), 600);
+
       const url = `${scriptURL}?action=passage&playerID=${playerID}&sessionID=${sessionID}&tactic=${encodeURIComponent(tactic)}&t=${Date.now()}`;
       document.getElementById("debugLogs").innerText = "[PLAY PASSAGE] Fetching...";
 
@@ -330,7 +369,6 @@
     }
   });
 </script>
-
 
 
 
