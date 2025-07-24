@@ -165,6 +165,9 @@
 
 <body>
 
+  <!-- ⛺ Background Glyph Layer -->
+  <div class="glyph-overlay"></div>
+
   <!-- Header Block -->
   <header>
     <h1 class="glyph-title">Middle-Earth Match Simulator</h1>
@@ -213,6 +216,9 @@
     <button id="resetGameButton">Reset Match</button>
   </div>
 
+  <!-- Rune Sparkle Animation -->
+  <div class="runeSparkle">✶</div>
+
   <!-- Loading Overlay -->
   <div id="loadingOverlay" style="
     display: none;
@@ -230,7 +236,22 @@
     </div>
   </div>
 
+  <!-- ⛰️ Style for Glyph Background -->
+  <style>
+    .glyph-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background: url('your-sigil.svg') center center / contain no-repeat;
+      opacity: 0.03;
+      pointer-events: none;
+    }
+  </style>
+
 </body>
+
 
 
 <!-- Middle-Earth Match Simulator [SCRIPT] — Part 1
