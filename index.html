@@ -7,13 +7,22 @@
 <head>
   <meta charset="UTF-8" />
   <title>Middle-Earth Match Simulator</title>
+
+  <!-- 🧙 Tolkien Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
+
   <style>
+    /* 📜 Glyph-Styled Header */
+    .glyph-title {
+      font-family: 'EB Garamond', serif;
+      font-size: 2.5rem;
+      color: #dccca3;
+      text-shadow: 0 0 8px rgba(255, 244, 213, 0.4);
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
 
-    /* Styling rules here — unchanged from previous delivery */
-    /* Includes zone classes: .attackZone, .holdZone, .defendZone, .possessionTeam1, .possessionTeam2 */
-    /* Includes animations, fonts, layout, and component styles */
-
-    
+    /* 🎨 Main Styling */
     body {
       background-color: #1c1c1c;
       color: #f0f0f0;
@@ -38,8 +47,19 @@
       align-items: center;
     }
 
-    #passage { font-size: 20px; font-style: italic; margin-top: 20px; }
-    #commentaryBox { font-style: italic; color: #ccc; margin-top: 15px; font-size: 18px; white-space: pre-line; }
+    #passage {
+      font-size: 20px;
+      font-style: italic;
+      margin-top: 20px;
+    }
+
+    #commentaryBox {
+      font-style: italic;
+      color: #ccc;
+      margin-top: 15px;
+      font-size: 18px;
+      white-space: pre-line;
+    }
 
     button {
       margin: 10px;
@@ -119,14 +139,15 @@
       transition: fill 0.4s ease;
     }
 
-    .attackZone { fill: #ff4d4d !important; }
-    .holdZone   { fill: #f0e68c !important; }
-    .defendZone { fill: #3399ff !important; }
-    .resetZone  { fill: #2c2c2c !important; }
-    .possessionTeam1 { fill: #b22222 !important; }
-    .possessionTeam2 { fill: #228b22 !important; }
+    .attackZone       { fill: #ff4d4d !important; }
+    .holdZone         { fill: #f0e68c !important; }
+    .defendZone       { fill: #3399ff !important; }
+    .resetZone        { fill: #2c2c2c !important; }
+    .possessionTeam1  { fill: #b22222 !important; }
+    .possessionTeam2  { fill: #228b22 !important; }
   </style>
 </head>
+
 
 
 <!-- Middle-Earth Match Simulator [BODY]
@@ -136,11 +157,14 @@
 
 <body>
 
-  <!-- Scoreboard, dropdown, commentary, tactical map, controls, and overlay -->
-  <!-- Includes: <select id="team1Tactic">, <svg id="tacticalMap">, and loadingOverlay -->
-
-  
-  <h1>Middle-Earth Match Simulator</h1>
+  <!-- Header -->
+  <header>
+    <h1 class="glyph-title">Middle-Earth Match Simulator</h1>
+    <p style="font-family: 'EB Garamond', serif; color: #c0b283; font-size: 18px; margin-top: -10px;">
+      SigilForge Arena of Elven Light and Dwarven Might
+    </p>
+    <hr style="border: 0; height: 1px; background: linear-gradient(to right, #dccca3, #999, #dccca3); margin: 20px 0;">
+  </header>
 
   <!-- Scoreboard -->
   <div id="scoreboard">
