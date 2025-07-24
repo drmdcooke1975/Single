@@ -221,6 +221,15 @@
     <option value="Defend" title="Guard the ancient walls">Defend</option>
   </select>
 
+<!-- Faction Input -->
+          <label for="factionSelect">Choose Faction Glow:</label><br />
+<select id="factionSelect">
+  <option value="neutral" selected>Neutral</option>
+  <option value="dwarves">Dwarves of Khazad-dûm</option>
+  <option value="elves">Elves of Lothlórien</option>
+</select>
+
+
   <!-- Dynamic Commentary -->
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
   <p id="passage">Loading passage...</p>
@@ -453,6 +462,19 @@
             }
             spawnRuneSparkle("⚽");
           }
+
+             const factionSelect = document.getElementById('factionSelect');
+
+factionSelect.addEventListener('change', () => {
+  document.body.classList.remove('faction-dwarves', 'faction-elves');
+  const chosenFaction = factionSelect.value;
+  if (chosenFaction === 'dwarves') {
+    document.body.classList.add('faction-dwarves');
+  } else if (chosenFaction === 'elves') {
+    document.body.classList.add('faction-elves');
+  }
+});
+
 
           // Phase 2 — Tactical Map Outcome Update
           const zoneLeft = document.getElementById("zoneLeft");
