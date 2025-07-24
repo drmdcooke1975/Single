@@ -178,7 +178,6 @@
      Section: Interface & Tactical Map
      Version: 1.3.0
      Updated: 24 July 2025, 10:43 BST -->
-
 <body>
 
   <!-- ⛺ Background Glyph Layer -->
@@ -193,8 +192,6 @@
     <hr style="border: 0; height: 1px; background: linear-gradient(to right, #dccca3, #999, #dccca3); margin: 20px 0;">
   </header>
 
-
-     
   <!-- Scoreboard -->
   <div id="scoreboard">
     <span id="team1Name" style="margin-right: 15px;">🛡️ Dwarves of Khazad-dûm</span>
@@ -255,53 +252,53 @@
   </div>
 
   <!-- ⛰️ Style for Glyph Background -->
-
-
-<style>
-  .glyph-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: url('rune-glyph.svg') center center / 400px no-repeat;
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: -1;
-  }
-</style>
-<script>
-  const runeByTactic = {
-    Attack: 'assets/glyphs/rune-wrath.svg',
-    Hold: 'assets/glyphs/rune-fortitude.svg',
-    Defend: 'assets/glyphs/rune-veil.svg'
-  };
-
-  const runeCycle = [
-    'assets/glyphs/rune-shadowbind.svg',
-    'assets/glyphs/rune-lightward.svg',
-    'assets/glyphs/rune-tempest.svg'
-  ];
-
-  const overlayEl = document.querySelector('.glyph-overlay');
-  const selectEl = document.getElementById('team1Tactic');
-
-  // Tactic-linked rune
-  selectEl.addEventListener('change', () => {
-    const chosen = selectEl.value;
-    if (runeByTactic[chosen]) {
-      overlayEl.style.backgroundImage = `url('${runeByTactic[chosen]}')`;
+  <style>
+    .glyph-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('assets/glyphs/rune-fortitude.svg') center center / 400px no-repeat;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: -1;
     }
-  });
+  </style>
 
-  // Timed rotation overlay (every 3 minutes)
-  setInterval(() => {
-    const randomIndex = Math.floor(Math.random() * runeCycle.length);
-    overlayEl.style.backgroundImage = `url('${runeCycle[randomIndex]}')`;
-  }, 180000);
-</script>
+  <!-- 🌀 Rune Logic Controller -->
+  <script>
+    const runeByTactic = {
+      Attack: 'assets/glyphs/rune-wrath.svg',
+      Hold: 'assets/glyphs/rune-fortitude.svg',
+      Defend: 'assets/glyphs/rune-veil.svg'
+    };
 
-     
+    const runeCycle = [
+      'assets/glyphs/rune-shadowbind.svg',
+      'assets/glyphs/rune-lightward.svg',
+      'assets/glyphs/rune-tempest.svg'
+    ];
+
+    const overlayEl = document.querySelector('.glyph-overlay');
+    const selectEl = document.getElementById('team1Tactic');
+
+    // Tactic-triggered rune update
+    selectEl.addEventListener('change', () => {
+      const chosen = selectEl.value;
+      if (runeByTactic[chosen]) {
+        overlayEl.style.backgroundImage = `url('${runeByTactic[chosen]}')`;
+      }
+    });
+
+    // Timed ambient rune rotation
+    setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * runeCycle.length);
+      overlayEl.style.backgroundImage = `url('${runeCycle[randomIndex]}')`;
+    }, 180000); // every 3 minutes
+  </script>
+
 </body>
+
 
 
 
