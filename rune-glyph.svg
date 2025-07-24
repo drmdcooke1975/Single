@@ -1,0 +1,12 @@
+<!-- Save as rune-glyph.svg -->
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="200" cy="200" r="180" stroke="#dccca3" stroke-width="3" fill="none" />
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia, serif" font-size="22" fill="#dccca3" transform="rotate(-15,200,200)">
+    ᛏᛟᛚᚲᛁᛖᚾ
+  </text>
+  <text x="50%" y="55%" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia, serif" font-size="14" fill="#999" transform="rotate(15,200,220)">
+    Rune of Guardianship
+  </text>
+</svg>
