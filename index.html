@@ -189,13 +189,10 @@
      Version: 1.3.0
      Updated: 24 July 2025, 10:43 BST -->
 
-     <body>
+ <body>
 
   <!-- ⛺ Background Glyph Layer -->
-          
-<div class="glyph-overlay"></div>
-
-
+  <div class="glyph-overlay"></div>
 
   <!-- Header Block -->
   <header>
@@ -221,14 +218,14 @@
     <option value="Defend" title="Guard the ancient walls">Defend</option>
   </select>
 
-<!-- Faction Input -->
-          <label for="factionSelect">Choose Faction Glow:</label><br />
-<select id="factionSelect">
-  <option value="neutral" selected>Neutral</option>
-  <option value="dwarves">Dwarves of Khazad-dûm</option>
-  <option value="elves">Elves of Lothlórien</option>
-</select>
-
+  <!-- Faction Input -->
+  <br /><br />
+  <label for="factionSelect">Choose Faction Glow:</label><br />
+  <select id="factionSelect">
+    <option value="neutral" selected>Neutral</option>
+    <option value="dwarves">Dwarves of Khazad-dûm</option>
+    <option value="elves">Elves of Lothlórien</option>
+  </select>
 
   <!-- Dynamic Commentary -->
   <p id="commentaryBox">Let the clash begin under ancient skies…</p>
@@ -265,6 +262,7 @@
 
   <!-- 🌀 Rune Logic Controller -->
   <script>
+    // Tactic-driven rune swapping
     const runeByTactic = {
       Attack: 'assets/glyph/rune-wrath.svg',
       Hold: 'assets/glyph/rune-fortitude.svg',
@@ -278,24 +276,37 @@
     ];
 
     const overlayEl = document.querySelector('.glyph-overlay');
-    const selectEl = document.getElementById('team1Tactic');
+    const tacticSelect = document.getElementById('team1Tactic');
 
-    // Tactic-triggered rune update
-    selectEl.addEventListener('change', () => {
-      const chosen = selectEl.value;
-      if (runeByTactic[chosen]) {
-        overlayEl.style.backgroundImage = `url('${runeByTactic[chosen]}')`;
+    tacticSelect.addEventListener('change', () => {
+      const tactic = tacticSelect.value;
+      if (runeByTactic[tactic]) {
+        overlayEl.style.backgroundImage = `url('${runeByTactic[tactic]}')`;
       }
     });
 
-    // Timed ambient rune rotation
     setInterval(() => {
       const randomIndex = Math.floor(Math.random() * runeCycle.length);
       overlayEl.style.backgroundImage = `url('${runeCycle[randomIndex]}')`;
-    }, 180000); // every 3 minutes
+    }, 180000); // Rotate rune every 3 minutes
+
+    // 🔮 Faction Glow Handler
+    const factionSelect = document.getElementById('factionSelect');
+
+    factionSelect.addEventListener('change', () => {
+      document.body.classList.remove('faction-dwarves', 'faction-elves');
+      const chosenFaction = factionSelect.value;
+      if (chosenFaction === 'dwarves') {
+        document.body.classList.add('faction-dwarves');
+      } else if (chosenFaction === 'elves') {
+        document.body.classList.add('faction-elves');
+      }
+      // Neutral = no glow class
+    });
   </script>
 
 </body>
+
 
 
 
