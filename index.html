@@ -186,19 +186,17 @@
   <!-- Header Block -->
   <header>
     <h1 class="glyph-title">Middle-Earth Match Simulator</h1>
-    <p style="font-family: 'EB Garamond', serif; color: #c0b283; font-size: 18px; margin-top: -10px;">
-      SigilForge Arena of Elven Light and Dwarven Might
-    </p>
-    <hr style="border: 0; height: 1px; background: linear-gradient(to right, #dccca3, #999, #dccca3); margin: 20px 0;">
+    <p class="arena-subtitle">SigilForge Arena of Elven Light and Dwarven Might</p>
+    <hr>
   </header>
 
   <!-- Scoreboard -->
   <div id="scoreboard">
-    <span id="team1Name" style="margin-right: 15px;">🛡️ Dwarves of Khazad-dûm</span>
+    <span id="team1Name">🛡️ Dwarves of Khazad-dûm</span>
     <strong id="team1Score">0</strong>
-    <span style="margin: 0 10px;">⚔️</span>
+    <span>⚔️</span>
     <strong id="team2Score">0</strong>
-    <span id="team2Name" style="margin-left: 15px;">🌿 Elves of Lothlórien</span>
+    <span id="team2Name">🌿 Elves of Lothlórien</span>
   </div>
 
   <!-- Tactical Input -->
@@ -218,14 +216,14 @@
   <p id="passageCounter">Passages Played: 0</p>
 
   <!-- Tactical Map -->
-  <svg id="tacticalMap" width="320" height="100" style="margin-top: 20px; border: 2px solid #ccc; border-radius: 8px;">
+  <svg id="tacticalMap" width="320" height="100">
     <rect id="zoneLeft" class="resetZone" x="0" y="0" width="106" height="100" />
     <rect id="zoneCenter" class="resetZone" x="106" y="0" width="106" height="100" />
     <rect id="zoneRight" class="resetZone" x="212" y="0" width="108" height="100" />
   </svg>
 
   <!-- Match Controls -->
-  <div id="controls" style="margin-top: 20px;">
+  <div id="controls">
     <button id="startGameButton">Start New Match</button>
     <button id="continueMatchButton" disabled>Play Passage</button>
     <button id="resetGameButton">Reset Match</button>
@@ -235,35 +233,12 @@
   <div class="runeSparkle">✶</div>
 
   <!-- Loading Overlay -->
-  <div id="loadingOverlay" style="
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.8);
-    color: #fff;
-    font-size: 20px;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;">
+  <div id="loadingOverlay">
     <div>
       🧙‍♂️ Preparing passage...<br />
-      <span style="font-size: 16px;">The winds of fate are shifting…</span>
+      <span>The winds of fate are shifting…</span>
     </div>
   </div>
-
-  <!-- ⛰️ Style for Glyph Background -->
-  <style>
-    .glyph-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: url('assets/glyphs/rune-fortitude.svg') center center / 400px no-repeat;
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: -1;
-    }
-  </style>
 
   <!-- 🌀 Rune Logic Controller -->
   <script>
@@ -298,6 +273,7 @@
   </script>
 
 </body>
+
 
 
 
