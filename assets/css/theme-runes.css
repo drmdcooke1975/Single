@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: url('../glyphs/rune-fortitude.svg') center center / 400px no-repeat;
+  background: url('../glyph/rune-fortitude.svg') center center / 400px no-repeat;
   opacity: 0.03;
   pointer-events: none;
   z-index: -1;
@@ -42,7 +42,7 @@ hr {
   margin: 20px 0;
 }
 
-header p {
+.arena-subtitle {
   font-family: 'EB Garamond', serif;
   color: #c0b283;
   font-size: 18px;
