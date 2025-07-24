@@ -1,18 +1,13 @@
 .glyph-overlay {
+  background: url('../glyph/rune-wrath.svg') center center / 400px no-repeat;
+  opacity: 0.3;
+  filter: brightness(1.2) contrast(1.1);
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: url('../glyph/rune-fortitude.svg') center center / 400px no-repeat;
-  opacity: 1; /* Boosted from 0.03 */
-  filter: brightness(25) contrast(50); /* Optional enhancement */
-  mix-blend-mode: screen;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   pointer-events: none;
   z-index: -1;
 }
-
-
 
 
 #loadingOverlay {
