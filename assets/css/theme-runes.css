@@ -5,7 +5,8 @@
   width: 100vw;
   height: 100vh;
   background: url('../glyph/rune-fortitude.svg') center center / 400px no-repeat;
-  opacity: 0.9;
+  opacity: 0.25; /* Boosted from 0.03 */
+  filter: brightness(1.6) contrast(1.4); /* Optional enhancement */
   pointer-events: none;
   z-index: -1;
 }
