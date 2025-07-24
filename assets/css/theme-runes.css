@@ -1,0 +1,50 @@
+.glyph-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('../glyphs/rune-fortitude.svg') center center / 400px no-repeat;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: -1;
+}
+
+#loadingOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 20px;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#tacticalMap {
+  margin-top: 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+
+#controls {
+  margin-top: 20px;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, #dccca3, #999, #dccca3);
+  margin: 20px 0;
+}
+
+header p {
+  font-family: 'EB Garamond', serif;
+  color: #c0b283;
+  font-size: 18px;
+  margin-top: -10px;
+}
