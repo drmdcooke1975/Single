@@ -253,6 +253,36 @@
     z-index: -1;
   }
 </style>
+<script>
+  const runeByTactic = {
+    Attack: 'assets/glyphs/rune-wrath.svg',
+    Hold: 'assets/glyphs/rune-fortitude.svg',
+    Defend: 'assets/glyphs/rune-veil.svg'
+  };
+
+  const runeCycle = [
+    'assets/glyphs/rune-shadowbind.svg',
+    'assets/glyphs/rune-lightward.svg',
+    'assets/glyphs/rune-tempest.svg'
+  ];
+
+  const overlayEl = document.querySelector('.glyph-overlay');
+  const selectEl = document.getElementById('team1Tactic');
+
+  // Tactic-linked rune
+  selectEl.addEventListener('change', () => {
+    const chosen = selectEl.value;
+    if (runeByTactic[chosen]) {
+      overlayEl.style.backgroundImage = `url('${runeByTactic[chosen]}')`;
+    }
+  });
+
+  // Timed rotation overlay (every 3 minutes)
+  setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * runeCycle.length);
+    overlayEl.style.backgroundImage = `url('${runeCycle[randomIndex]}')`;
+  }, 180000);
+</script>
 
      
 </body>
